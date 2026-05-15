@@ -1,0 +1,211 @@
+SWE-PRUNER MANUAL TEST GUIDE (WINDOWS, GIT BASH)
+
+Goal
+- Verify the project runs end-to-end and returns correct API responses.
+- Confirm startup, health, prune inference, performance sanity, and failure handling.
+
+Tested Workspace Layout
+- Root: E:/A A SPL3/part-2/swe-pruner
+- Project code: E:/A A SPL3/part-2/swe-pruner/swe-pruner/swe-pruner
+- Model folder: E:/A A SPL3/part-2/swe-pruner/swe-pruner/swe-pruner/model
+- Python venv: E:/A A SPL3/part-2/swe-pruner/.venv
+
+Prerequisites
+1. Python 3.12 available in venv.
+2. Model files exist locally in ./model (especially model.safetensors ~1.3 GB).
+3. Internet available for first backbone/cache downloads from Hugging Face.
+
+--------------------------------------------------------------------
+SECTION A: ENVIRONMENT SANITY
+--------------------------------------------------------------------
+
+Run:
+cd "/e/A A SPL3/part-2/swe-pruner/swe-pruner/swe-pruner"
+"/e/A A SPL3/part-2/swe-pruner/.venv/Scripts/python.exe" -V
+"/e/A A SPL3/part-2/swe-pruner/.venv/Scripts/python.exe" -m pip -V
+
+Pass criteria:
+- Python is 3.12.x
+- pip points to .venv path
+
+Run:
+ls -lh ./model
+
+Pass criteria:
+- model.safetensors exists and is around 1.3G
+- tokenizer/config files exist
+
+--------------------------------------------------------------------
+SECTION B: START SERVICE CLEANLY
+--------------------------------------------------------------------
+
+1) Stop any old service on 8000:
+netstat -ano | grep :8000 | grep LISTENING | awk '{print $5}' | xargs -r taskkill //F //PID
+
+2) Start server in background:
+nohup "/e/A A SPL3/part-2/swe-pruner/.venv/Scripts/python.exe" -m swe_pruner.online_serving --model-path ./model --port 8000 > /tmp/swe_pruner.log 2>&1 &
+
+3) Wait and inspect startup logs:
+sleep 12
+tail -n 120 /tmp/swe_pruner.log
+
+Pass criteria:
+- Contains: "Model loaded successfully"
+- Contains: "Application startup complete"
+- Contains: "Uvicorn running on http://0.0.0.0:8000"
+
+If startup fails:
+- Check port conflict and kill process on 8000 again.
+- Recheck model path and files.
+
+--------------------------------------------------------------------
+SECTION B.5: SWAGGER API DOCS (OPTIONAL VISUAL TEST)
+--------------------------------------------------------------------
+
+Open in browser:
+http://127.0.0.1:8000/docs
+
+Expected view:
+- FastAPI auto-generated Swagger UI
+- Lists GET /health and POST /prune endpoints
+- Can test directly in UI
+
+⚠️  IMPORTANT: When copying curl commands from Swagger UI:
+- Remove trailing commas in JSON (,} should be })
+- Test in terminal before using in scripts
+
+Example fix:
+WRONG: {"query":"x","threshold":0.5,}
+RIGHT: {"query":"x","threshold":0.5}
+
+--------------------------------------------------------------------
+SECTION C: HEALTH ENDPOINT TEST
+--------------------------------------------------------------------
+
+Run:
+curl -sS --max-time 20 http://127.0.0.1:8000/health
+
+Expected response:
+{"status":"healthy","model_loaded":true}
+
+Pass criteria:
+- HTTP returns quickly
+- JSON has status=healthy and model_loaded=true
+
+--------------------------------------------------------------------
+SECTION D: END-TO-END PRUNE TEST (MAIN FUNCTIONAL TEST)
+--------------------------------------------------------------------
+
+Run:
+time curl -sS --max-time 180 -X POST http://127.0.0.1:8000/prune \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Identify authentication and session-related logic",
+    "code": "def hash_password(pwd):\n    return pwd + \"_hash\"\n\ndef login(user, pwd):\n    if user == \"admin\" and hash_password(pwd) == \"secret_hash\":\n        return create_session(user)\n    return None\n\ndef create_session(user):\n    return {\"token\": \"abc\", \"user\": user}\n\ndef render_homepage():\n    return \"welcome\"\n",
+    "threshold": 0.45
+  }'
+
+Pass criteria:
+- HTTP 200 response
+- JSON fields exist: score, pruned_code, token_scores, kept_frags, origin_token_cnt, left_token_cnt
+- pruned_code is non-empty
+- Request completes within a reasonable time on CPU (typically a few seconds to tens of seconds)
+
+Also inspect logs:
+tail -n 120 /tmp/swe_pruner.log
+
+Pass criteria:
+- Log shows POST /prune ... 200 OK
+- No traceback during request
+
+--------------------------------------------------------------------
+SECTION E: NEGATIVE TESTS (ERROR HANDLING)
+--------------------------------------------------------------------
+
+E1) Missing required field
+Run:
+curl -sS -X POST http://127.0.0.1:8000/prune -H "Content-Type: application/json" -d '{"query":"x"}'
+
+Pass criteria:
+- Validation error JSON (expected 422) returned, not server crash.
+
+E2) Empty code payload
+Run:
+curl -sS -X POST http://127.0.0.1:8000/prune -H "Content-Type: application/json" -d '{"query":"auth","code":"","threshold":0.5}'
+
+Pass criteria:
+- Returns structured JSON response with error handling or valid empty-result behavior.
+- Server remains healthy afterward.
+
+E3) Health still works after bad input
+Run:
+curl -sS http://127.0.0.1:8000/health
+
+Pass criteria:
+- Still returns healthy JSON.
+
+--------------------------------------------------------------------
+SECTION F: PERFORMANCE SANITY LOOP (OPTIONAL)
+--------------------------------------------------------------------
+
+Run 3 requests and compare timing stability:
+for i in 1 2 3; do
+  time curl -sS --max-time 180 -X POST http://127.0.0.1:8000/prune \
+    -H "Content-Type: application/json" \
+    -d '{"query":"auth","code":"def login():\n    return True\n","threshold":0.5}' > /tmp/prune_$i.json
+done
+
+Pass criteria:
+- All 3 complete without timeout
+- No 500 errors
+- Latency does not blow up between runs
+
+--------------------------------------------------------------------
+SECTION G: SHUTDOWN
+--------------------------------------------------------------------
+
+Find process and stop:
+netstat -ano | grep :8000 | grep LISTENING
+taskkill //F //PID <PID_FROM_OUTPUT>
+
+Pass criteria:
+- Port 8000 no longer listening
+
+--------------------------------------------------------------------
+TROUBLESHOOTING QUICK MAP
+--------------------------------------------------------------------
+
+1) "Port already in use"
+- Kill process on 8000 and restart.
+
+2) Health works but prune hangs/timeouts
+- Check /tmp/swe_pruner.log for traceback.
+- Retry with tiny code payload first.
+
+3) "model type qwen3 not recognized"
+- Your transformers version is incompatible with the current local setup.
+- Reinstall the project in the workspace venv and use the known working setup used in this workspace.
+
+4) Torch missing
+- Install torch in the same venv used to start server.
+
+5) LFS download failed
+- Use Hugging Face download command instead of git lfs pull.
+
+6) 422 Unprocessable Entity / "JSON decode error"
+- You have a trailing comma in the JSON payload (e.g., "threshold": 0.45,})
+- Fix by removing the trailing comma before the closing brace
+- Swagger UI may auto-generate trailing commas; always validate before copying curl commands
+
+--------------------------------------------------------------------
+FINAL ACCEPTANCE CHECKLIST
+--------------------------------------------------------------------
+
+- [ ] Server starts without crash
+- [ ] /health returns healthy JSON
+- [ ] /prune returns HTTP 200 and valid JSON
+- [ ] Negative tests return validation errors, not crashes
+- [ ] Logs contain no fatal traceback during successful requests
+- [ ] Service can be shut down cleanly
+
+If all boxes are checked, SWE-Pruner is manually verified end-to-end.
