@@ -124,6 +124,37 @@ Expected: JSON response containing score, pruned_code, token_scores, kept_frags,
 
 Important: JSON cannot contain trailing commas.
 
+### 10) Run TokenWise VS Code Extension (fully usable)
+
+From TokenWise root:
+
+    cd vscode-extension
+    npm install
+    npm run compile
+
+Open the vscode-extension folder in VS Code and run Extension Development Host:
+
+1. Press F5
+2. In the new VS Code window, open any code file
+3. Run one of these commands from Command Palette:
+   - TokenWise: Prune Selected Code
+   - TokenWise: Prune Current File
+   - TokenWise: Check Backend Health
+
+Default extension settings:
+
+- tokenWise.apiUrl = http://127.0.0.1:8000
+- tokenWise.timeoutMs = 120000
+- tokenWise.defaultThreshold = 0.45
+
+If backend is running, result panel will open with:
+
+- score
+- original vs pruned token counts
+- reduction percentage
+- original/pruned code panes
+- copy and insert actions
+
 ## Optional Background Run (Server)
 
 From swe-pruner/swe-pruner directory:
@@ -205,6 +236,7 @@ Use Manual-test.txt for complete manual validation:
 - Future direction and product roadmap: future-directions.md
 - Contribution guide: CONTRIBUTING.md
 - Manual verification: Manual-test.txt
+- Extension guide: vscode-extension/README.md
 
 ## Contributing
 

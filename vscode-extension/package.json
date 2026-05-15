@@ -1,0 +1,86 @@
+{
+  "name": "tokenwise-vscode",
+  "displayName": "TokenWise",
+  "description": "Task-aware code context pruning for AI workflows using SWE-Pruner.",
+  "version": "0.1.0",
+  "publisher": "adnan-bin-wahid",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:tokenwise.pruneSelected",
+    "onCommand:tokenwise.pruneCurrentFile",
+    "onCommand:tokenwise.checkHealth"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "tokenwise.pruneSelected",
+        "title": "TokenWise: Prune Selected Code"
+      },
+      {
+        "command": "tokenwise.pruneCurrentFile",
+        "title": "TokenWise: Prune Current File"
+      },
+      {
+        "command": "tokenwise.checkHealth",
+        "title": "TokenWise: Check Backend Health"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "tokenwise.pruneSelected",
+          "when": "editorHasSelection",
+          "group": "navigation@50"
+        },
+        {
+          "command": "tokenwise.pruneCurrentFile",
+          "group": "navigation@51"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "TokenWise",
+      "properties": {
+        "tokenWise.apiUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8000",
+          "description": "SWE-Pruner backend API base URL."
+        },
+        "tokenWise.timeoutMs": {
+          "type": "number",
+          "default": 120000,
+          "minimum": 1000,
+          "description": "Request timeout in milliseconds."
+        },
+        "tokenWise.defaultThreshold": {
+          "type": "number",
+          "default": 0.45,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Default pruning threshold used in requests."
+        },
+        "tokenWise.autoOpenResultPanel": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open TokenWise result panel automatically after each prune."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "@types/vscode": "^1.95.0",
+    "typescript": "^5.5.4"
+  }
+}

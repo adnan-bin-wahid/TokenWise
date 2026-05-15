@@ -48,3 +48,7 @@ model/
 # Local research artifacts / upstream checkout
 SWE-pruner.pdf
 swe-pruner/
+
+# VS Code extension artifacts
+vscode-extension/node_modules/
+vscode-extension/dist/
