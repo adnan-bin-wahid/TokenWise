@@ -1,72 +1,215 @@
 # TokenWise
 
-TokenWise is a developer-friendly context optimization tool built on top of SWE-Pruner.
-It helps reduce irrelevant code context before sending prompts to coding assistants.
+TokenWise is a developer-friendly context optimization project powered by SWE-Pruner.
+It reduces irrelevant code context before sending prompts to coding assistants.
 
-## Why TokenWise
+## What You Get
 
-- Reduce token usage in AI prompts
-- Improve response latency by shrinking context
-- Keep prompt quality high with task-aware pruning
-- Integrate naturally with editor workflows
+- Task-aware context pruning
+- Lower prompt token usage
+- Faster model responses from smaller context
+- Foundation for a user-friendly VS Code extension
 
-## Current Status
+## Repository Purpose
 
-This repository is in active early development.
+This repository is the TokenWise product layer:
 
-Current contents:
-- Product planning docs for a VS Code extension
-- Manual validation notes for SWE-Pruner setup and API behavior
-- Upstream SWE-Pruner source checkout under the `swe-pruner/` directory
+- Product docs and roadmap
+- Manual verification guide
+- Extension planning and implementation direction
 
-## Repository Layout
+SWE-Pruner runtime and model-serving logic live in the SWE-Pruner repository.
 
-.
-├── README.md
-├── future-directions.md
-├── Manual-test.txt
-├── swe-pruner/
-└── .venv/ (local only, ignored)
+## Recommended Repository Structure
 
-## Roadmap
+For maximum maintainability, keep this split:
 
-Near-term goals:
-1. Build a VS Code extension MVP for one-click context pruning
-2. Add local and hosted backend modes
-3. Add copy/insert flows for AI chat contexts
-4. Track token reduction and reliability metrics
+1. TokenWise repo: extension plus product logic
+2. SWE-Pruner fork repo: upstream-related runtime patches only
+3. Optional submodule pinning for reproducible versions
 
-See details in `future-directions.md`.
+## Prerequisites (Fresh PC)
 
-## Getting Started (Current Local Setup)
+Install these first:
 
-Prerequisites:
+- Git
 - Python 3.12
-- Git Bash (Windows) or compatible shell
+- pip
+- Hugging Face CLI (command: hf)
+- VS Code (optional but recommended)
 
-From repo root:
+Quick checks:
 
-```bash
-cd "swe-pruner/swe-pruner"
-```
+	git --version
+	python --version
+	pip --version
+	hf --help
 
-Start local SWE-Pruner API:
+Expected Python: 3.12.x
 
-```bash
-"/e/A A SPL3/part-2/swe-pruner/.venv/Scripts/python.exe" -m swe_pruner.online_serving --model-path ./model --port 8000
-```
+## Fresh Setup: Full Local Run
 
-Health check:
+These steps assume Windows plus Git Bash.
 
-```bash
-curl -sS http://127.0.0.1:8000/health
-```
+### 1) Clone TokenWise
+
+	git clone https://github.com/adnan-bin-wahid/TokenWise.git
+	cd TokenWise
+
+### 2) Clone SWE-Pruner fork into workspace
+
+If the folder does not exist yet:
+
+	git clone https://github.com/adnan-bin-wahid/swe-pruner.git swe-pruner
+
+### 3) Enter SWE-Pruner runtime directory
+
+	cd swe-pruner/swe-pruner
+
+### 4) Create virtual environment
+
+Create venv at TokenWise root:
+
+	python -m venv ../../.venv
+
+Activate in Git Bash:
+
+	source ../../.venv/Scripts/activate
+
+Verify:
+
+	python --version
+
+### 5) Install runtime dependencies
+
+	pip install --upgrade pip
+	pip install torch
+	pip install -e .
+
+### 6) Download SWE-Pruner model files
+
+	hf download ayanami-kitasan/code-pruner --local-dir ./model
+
+Verify downloaded files:
+
+	ls -lh ./model
+
+Expected: model.safetensors around 1.3 GB plus tokenizer/config files.
+
+### 7) Start backend API server
+
+	python -m swe_pruner.online_serving --model-path ./model --port 8000
+
+Leave this terminal running.
+
+### 8) Health check from another terminal
+
+	curl -sS --max-time 20 http://127.0.0.1:8000/health
+
+Expected response:
+
+	{"status":"healthy","model_loaded":true}
+
+### 9) End-to-end prune test
+
+	curl -sS -X POST http://127.0.0.1:8000/prune \
+	  -H "Content-Type: application/json" \
+	  -d '{
+		"query": "Identify authentication and session-related logic",
+		"code": "def hash_password(pwd):\n    return pwd + \"_hash\"\n\ndef login(user, pwd):\n    if user == \"admin\" and hash_password(pwd) == \"secret_hash\":\n        return create_session(user)\n    return None\n\ndef create_session(user):\n    return {\"token\": \"abc\", \"user\": user}\n\ndef render_homepage():\n    return \"welcome\"\n",
+		"threshold": 0.45
+	  }'
+
+Expected: JSON response containing score, pruned_code, token_scores, kept_frags, and token counts.
+
+Important: JSON cannot contain trailing commas.
+
+## Optional Background Run (Server)
+
+From swe-pruner/swe-pruner directory:
+
+	nohup python -m swe_pruner.online_serving --model-path ./model --port 8000 > /tmp/swe_pruner.log 2>&1 &
+
+View recent logs:
+
+	tail -n 120 /tmp/swe_pruner.log
+
+## Troubleshooting
+
+### 1) 422 Unprocessable Entity with JSON decode error
+
+Cause: invalid JSON payload, usually a trailing comma.
+
+Fix: remove trailing comma before closing brace.
+
+### 2) Git LFS model download fails
+
+Cause: upstream LFS budget limit.
+
+Fix: use Hugging Face download command shown above.
+
+### 3) Port 8000 already in use
+
+Find and kill process:
+
+	netstat -ano | grep :8000 | grep LISTENING
+	taskkill //F //PID <PID>
+
+### 4) Slow prune response on CPU
+
+- Test with smaller code first
+- Confirm health endpoint says model_loaded true
+- Check logs for stack traces
+
+### 5) Backend not reachable from extension
+
+- Verify API URL points to http://127.0.0.1:8000
+- Confirm health endpoint works in terminal
+
+## Upgrade and Sync Workflow
+
+### Sync SWE-Pruner fork with upstream
+
+Inside your fork clone:
+
+	git remote add upstream https://github.com/Ayanami1314/swe-pruner.git
+	git fetch upstream
+	git checkout main
+	git merge upstream/main
+	git push origin main
+
+### If using submodule pinning in TokenWise
+
+After updating fork main:
+
+	cd vendor/swe-pruner
+	git pull origin main
+	cd ../..
+	git add vendor/swe-pruner
+	git commit -m "chore: bump swe-pruner submodule"
+	git push
+
+## Manual Test Checklist
+
+Use Manual-test.txt for complete manual validation:
+
+- Startup checks
+- Health endpoint check
+- Prune endpoint test
+- Negative tests
+- Performance sanity loop
+- Shutdown procedure
+
+## Project Docs
+
+- Future direction and product roadmap: future-directions.md
+- Contribution guide: CONTRIBUTING.md
+- Manual verification: Manual-test.txt
 
 ## Contributing
 
-Contributions are welcome.
-Please read `CONTRIBUTING.md` before opening a pull request.
+Contributions are welcome. Please read CONTRIBUTING.md before opening a pull request.
 
 ## License
 
-This project is licensed under the MIT License. See `LICENSE`.
+This project is licensed under the MIT License. See LICENSE.
