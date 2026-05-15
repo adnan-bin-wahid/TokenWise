@@ -11,11 +11,15 @@ export function createCheckHealthCommand(service: PruneService) {
       async () => {
         try {
           const status = await service.checkHealth();
-          void vscode.window.showInformationMessage(`TokenWise backend healthy. ${status}`);
+          void vscode.window.showInformationMessage(
+            `TokenWise backend healthy. ${status}`,
+          );
         } catch (error) {
-          void vscode.window.showErrorMessage(`TokenWise health check failed: ${String(error)}`);
+          void vscode.window.showErrorMessage(
+            `TokenWise health check failed: ${String(error)}`,
+          );
         }
-      }
+      },
     );
   };
 }

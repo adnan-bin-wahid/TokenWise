@@ -1,7 +1,11 @@
 import { HealthResponse, PruneRequest, PruneResponse } from "../types";
 import { TokenWiseConfig } from "./config";
 
-async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
+async function fetchWithTimeout(
+  url: string,
+  init: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -16,7 +20,11 @@ export class TokenWiseApiClient {
   public constructor(private readonly config: TokenWiseConfig) {}
 
   public async health(): Promise<HealthResponse> {
-    const response = await fetchWithTimeout(`${this.config.apiUrl}/health`, { method: "GET" }, this.config.timeoutMs);
+    const response = await fetchWithTimeout(
+      `${this.config.apiUrl}/health`,
+      { method: "GET" },
+      this.config.timeoutMs,
+    );
     if (!response.ok) {
       throw new Error(`Health check failed with status ${response.status}`);
     }
@@ -34,7 +42,7 @@ export class TokenWiseApiClient {
         },
         body: JSON.stringify(request),
       },
-      this.config.timeoutMs
+      this.config.timeoutMs,
     );
 
     if (!response.ok) {

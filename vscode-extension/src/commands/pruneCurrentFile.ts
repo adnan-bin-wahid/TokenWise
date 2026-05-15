@@ -4,7 +4,11 @@ import { getTokenWiseConfig } from "../services/config";
 import { askQuery, askThreshold, getSelectedOrFullCode } from "../utils/editor";
 import { ResultPanel } from "../ui/resultPanel";
 
-export function createPruneCurrentFileCommand(service: PruneService, panel: ResultPanel, extensionUri: vscode.Uri) {
+export function createPruneCurrentFileCommand(
+  service: PruneService,
+  panel: ResultPanel,
+  extensionUri: vscode.Uri,
+) {
   return async () => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
@@ -36,12 +40,14 @@ export function createPruneCurrentFileCommand(service: PruneService, panel: Resu
             panel.show(result, extensionUri);
           }
           void vscode.window.showInformationMessage(
-            `TokenWise: done. Token reduction ${result.reductionPercent.toFixed(2)}%.`
+            `TokenWise: done. Token reduction ${result.reductionPercent.toFixed(2)}%.`,
           );
         } catch (error) {
-          void vscode.window.showErrorMessage(`TokenWise prune failed: ${String(error)}`);
+          void vscode.window.showErrorMessage(
+            `TokenWise prune failed: ${String(error)}`,
+          );
         }
-      }
+      },
     );
   };
 }

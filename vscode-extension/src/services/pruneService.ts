@@ -10,7 +10,11 @@ export class PruneService {
     return `Status: ${health.status}, Model loaded: ${health.model_loaded}`;
   }
 
-  public async prune(query: string, code: string, threshold: number): Promise<PruneResultViewModel> {
+  public async prune(
+    query: string,
+    code: string,
+    threshold: number,
+  ): Promise<PruneResultViewModel> {
     const client = new TokenWiseApiClient(getTokenWiseConfig());
     const response = await client.prune({ query, code, threshold });
 
@@ -18,9 +22,12 @@ export class PruneService {
       throw new Error(response.error_msg);
     }
 
-    const reductionPercent = response.origin_token_cnt > 0
-      ? ((response.origin_token_cnt - response.left_token_cnt) / response.origin_token_cnt) * 100
-      : 0;
+    const reductionPercent =
+      response.origin_token_cnt > 0
+        ? ((response.origin_token_cnt - response.left_token_cnt) /
+            response.origin_token_cnt) *
+          100
+        : 0;
 
     return {
       query,

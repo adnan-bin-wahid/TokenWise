@@ -17,7 +17,7 @@ export class ResultPanel {
         {
           enableScripts: true,
           retainContextWhenHidden: true,
-        }
+        },
       );
 
       this.panel.onDidDispose(() => {
@@ -31,21 +31,30 @@ export class ResultPanel {
 
         if (msg.command === "copy") {
           await vscode.env.clipboard.writeText(this.latestResult.prunedCode);
-          void vscode.window.showInformationMessage("TokenWise: pruned code copied.");
+          void vscode.window.showInformationMessage(
+            "TokenWise: pruned code copied.",
+          );
           return;
         }
 
         if (msg.command === "insert") {
           const editor = vscode.window.activeTextEditor;
           if (!editor) {
-            void vscode.window.showWarningMessage("TokenWise: no active editor to insert into.");
+            void vscode.window.showWarningMessage(
+              "TokenWise: no active editor to insert into.",
+            );
             return;
           }
 
           await editor.edit((builder) => {
-            builder.insert(editor.selection.active, this.latestResult!.prunedCode);
+            builder.insert(
+              editor.selection.active,
+              this.latestResult!.prunedCode,
+            );
           });
-          void vscode.window.showInformationMessage("TokenWise: inserted pruned code at cursor.");
+          void vscode.window.showInformationMessage(
+            "TokenWise: inserted pruned code at cursor.",
+          );
         }
       });
     }

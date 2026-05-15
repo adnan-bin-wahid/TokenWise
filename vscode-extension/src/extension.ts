@@ -9,7 +9,10 @@ export function activate(context: vscode.ExtensionContext): void {
   const service = new PruneService();
   const panel = new ResultPanel();
 
-  const statusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+  const statusItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Left,
+    100,
+  );
   statusItem.text = "$(filter) TokenWise";
   statusItem.tooltip = "TokenWise is ready";
   statusItem.command = "tokenwise.checkHealth";
@@ -19,13 +22,16 @@ export function activate(context: vscode.ExtensionContext): void {
     statusItem,
     vscode.commands.registerCommand(
       "tokenwise.pruneSelected",
-      createPruneSelectedCommand(service, panel, context.extensionUri)
+      createPruneSelectedCommand(service, panel, context.extensionUri),
     ),
     vscode.commands.registerCommand(
       "tokenwise.pruneCurrentFile",
-      createPruneCurrentFileCommand(service, panel, context.extensionUri)
+      createPruneCurrentFileCommand(service, panel, context.extensionUri),
     ),
-    vscode.commands.registerCommand("tokenwise.checkHealth", createCheckHealthCommand(service))
+    vscode.commands.registerCommand(
+      "tokenwise.checkHealth",
+      createCheckHealthCommand(service),
+    ),
   );
 }
 
