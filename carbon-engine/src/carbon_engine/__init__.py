@@ -3,6 +3,7 @@ from .features import FEATURE_COLUMNS, TARGET_COLUMNS, prepare_training_features
 from .inference import DualModeRegressorEngine, EstimationRequest, EstimationResponse
 from .merge import merge_benchmark_tables
 from .modeling import train_all_models
+from .registry import build_model_registry
 
 __all__ = [
     "CarbonEnginePaths",
@@ -15,4 +16,5 @@ __all__ = [
     "merge_benchmark_tables",
     "prepare_training_features",
     "train_all_models",
+    "build_model_registry",
 ]
