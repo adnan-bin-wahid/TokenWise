@@ -68,6 +68,7 @@ export class ResultPanel {
     const escapedQuery = escapeHtml(result.query);
     const escapedOriginal = escapeHtml(result.originalCode);
     const escapedPruned = escapeHtml(result.prunedCode);
+    const carbonSection = this.renderCarbonSection(result);
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -116,6 +117,8 @@ export class ResultPanel {
     <div><strong>Kept Fragments:</strong> ${result.keptFrags.join(", ") || "none"}</div>
   </div>
 
+  ${carbonSection}
+
   <div class="grid" style="margin-top: 12px;">
     <div class="card">
       <h3>Original</h3>
@@ -133,6 +136,26 @@ export class ResultPanel {
   </script>
 </body>
 </html>`;
+  }
+
+  private renderCarbonSection(result: PruneResultViewModel): string {
+    if (!result.carbonBefore || !result.carbonAfter || !result.carbonSavings) {
+      return "";
+    }
+
+    return `
+  <div class="card" style="margin-top: 12px;">
+    <h3>Carbon Impact (SEAL-style estimate)</h3>
+    <div class="stats">
+      <div class="stat"><div class="label">Prefill Saved</div><div class="value ok">${result.carbonSavings.prefillJoulesSaved.toFixed(4)} J</div></div>
+      <div class="stat"><div class="label">Decode Saved</div><div class="value ok">${result.carbonSavings.decodeJoulesSaved.toFixed(4)} J</div></div>
+      <div class="stat"><div class="label">Total Saved</div><div class="value ok">${result.carbonSavings.totalJoulesSaved.toFixed(4)} J</div></div>
+      <div class="stat"><div class="label">CO2 Avoided</div><div class="value ok">${result.carbonSavings.co2GramsSaved.toFixed(6)} g</div></div>
+    </div>
+    <div style="margin-top: 8px;"><strong>Model:</strong> ${escapeHtml(result.carbonAfter.modelFamily)}</div>
+    <div><strong>Route:</strong> ${escapeHtml(result.carbonAfter.route)}</div>
+    <div><strong>Carbon Intensity:</strong> ${result.carbonAfter.carbonIntensityGPerKwh.toFixed(2)} gCO2/kWh</div>
+  </div>`;
   }
 }
 
