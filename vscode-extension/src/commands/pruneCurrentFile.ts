@@ -8,6 +8,7 @@ export function createPruneCurrentFileCommand(
   service: PruneService,
   panel: ResultPanel,
   extensionUri: vscode.Uri,
+  onSuccess?: () => void,
 ) {
   return async () => {
     const editor = vscode.window.activeTextEditor;
@@ -39,6 +40,7 @@ export function createPruneCurrentFileCommand(
           if (cfg.autoOpenResultPanel) {
             panel.show(result, extensionUri);
           }
+          onSuccess?.();
           void vscode.window.showInformationMessage(
             `TokenWise: done. Token reduction ${result.reductionPercent.toFixed(2)}%.`,
           );

@@ -6,6 +6,8 @@ import { estimateCarbon } from "./carbonEstimator";
 import { countTokens } from "./tokenCounter";
 
 export class PruneService {
+  private sessionCo2GramsSaved = 0;
+
   public async checkHealth(): Promise<string> {
     const client = new TokenWiseApiClient(getTokenWiseConfig());
     const health = await client.health();
@@ -76,8 +78,13 @@ export class PruneService {
         totalJoulesSaved: carbonBefore.totalJoules - carbonAfter.totalJoules,
         co2GramsSaved: carbonBefore.co2Grams - carbonAfter.co2Grams,
       };
+      this.sessionCo2GramsSaved += result.carbonSavings.co2GramsSaved;
     }
 
     return result;
+  }
+
+  public getSessionCo2GramsSaved(): number {
+    return this.sessionCo2GramsSaved;
   }
 }
