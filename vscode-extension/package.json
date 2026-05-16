@@ -90,6 +90,19 @@
           "minimum": 1,
           "description": "Target model size in billions of parameters."
         },
+        "tokenWise.targetGpuType": {
+          "type": "string",
+          "default": "nvidia-a100-80gb",
+          "description": "GPU type assumption used for SEAL prompt-level estimation."
+        },
+        "tokenWise.targetMmluProScore": {
+          "type": "number",
+          "description": "Optional MMLU-Pro score override for the selected model."
+        },
+        "tokenWise.targetBbhScore": {
+          "type": "number",
+          "description": "Optional BBH score override for the selected model."
+        },
         "tokenWise.expectedOutputTokens": {
           "type": "number",
           "default": 256,

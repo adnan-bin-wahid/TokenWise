@@ -5,7 +5,9 @@ export interface CarbonEstimate {
   co2Grams: number;
   carbonIntensityGPerKwh: number;
   modelFamily: string;
-  route: "xgboost_interpolation" | "ridge_extrapolation";
+  prefillRoute: "xgboost_interpolation" | "ridge_extrapolation";
+  decodeRoute: "xgboost_interpolation" | "ridge_extrapolation";
+  featuresSource: string;
 }
 
 export interface CarbonEstimatorInput {
@@ -74,6 +76,8 @@ export function estimateCarbon(input: CarbonEstimatorInput): CarbonEstimate {
     co2Grams,
     carbonIntensityGPerKwh: input.carbonIntensityGPerKwh,
     modelFamily: input.modelFamily,
-    route,
+    prefillRoute: route,
+    decodeRoute: route,
+    featuresSource: "fallback_constants",
   };
 }

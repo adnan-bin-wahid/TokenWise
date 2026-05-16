@@ -153,7 +153,9 @@ export class ResultPanel {
       <div class="stat"><div class="label">CO2 Avoided</div><div class="value ok">${result.carbonSavings.co2GramsSaved.toFixed(6)} g</div></div>
     </div>
     <div style="margin-top: 8px;"><strong>Model:</strong> ${escapeHtml(result.carbonAfter.modelFamily)}</div>
-    <div><strong>Route:</strong> ${escapeHtml(result.carbonAfter.route)}</div>
+    <div><strong>Prefill Route:</strong> ${escapeHtml(result.carbonAfter.prefillRoute)}</div>
+    <div><strong>Decode Route:</strong> ${escapeHtml(result.carbonAfter.decodeRoute)}</div>
+    <div><strong>Feature Source:</strong> ${escapeHtml(result.carbonAfter.featuresSource)}</div>
     <div><strong>Carbon Intensity:</strong> ${result.carbonAfter.carbonIntensityGPerKwh.toFixed(2)} gCO2/kWh</div>
   </div>`;
   }

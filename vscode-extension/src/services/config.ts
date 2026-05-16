@@ -9,6 +9,9 @@ export interface TokenWiseConfig {
   carbonEstimatorMode: "local" | "remote";
   targetModelName: string;
   targetModelSizeB: number;
+  targetGpuType: string;
+  targetMmluProScore?: number;
+  targetBbhScore?: number;
   expectedOutputTokens: number;
   latencyPerInputTokenMs: number;
   latencyPerOutputTokenMs: number;
@@ -29,6 +32,9 @@ export function getTokenWiseConfig(): TokenWiseConfig {
     carbonEstimatorMode: String(cfg.get("carbonEstimatorMode", "remote")) === "remote" ? "remote" : "local",
     targetModelName: String(cfg.get("targetModelName", "gpt-4o")),
     targetModelSizeB: Number(cfg.get("targetModelSizeB", 200)),
+    targetGpuType: String(cfg.get("targetGpuType", "nvidia-a100-80gb")),
+    targetMmluProScore: cfg.get<number>("targetMmluProScore"),
+    targetBbhScore: cfg.get<number>("targetBbhScore"),
     expectedOutputTokens: Number(cfg.get("expectedOutputTokens", 256)),
     latencyPerInputTokenMs: Number(cfg.get("latencyPerInputTokenMs", 0.8)),
     latencyPerOutputTokenMs: Number(cfg.get("latencyPerOutputTokenMs", 2.2)),

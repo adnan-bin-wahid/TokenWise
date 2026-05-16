@@ -16,7 +16,9 @@ export class PruneService {
       co2Grams: response.co2_grams,
       carbonIntensityGPerKwh: response.carbon_intensity_g_per_kwh,
       modelFamily: response.model_name,
-      route: response.route,
+      prefillRoute: response.prefill_route,
+      decodeRoute: response.decode_route,
+      featuresSource: response.features_source,
     } as const;
   }
 
@@ -71,8 +73,11 @@ export class PruneService {
             output_tokens: cfg.expectedOutputTokens,
             model_name: cfg.targetModelName,
             model_size_b: cfg.targetModelSizeB,
+            gpu_type: cfg.targetGpuType,
             latency_per_input_token_ms: cfg.latencyPerInputTokenMs,
             latency_per_output_token_ms: cfg.latencyPerOutputTokenMs,
+            mmlu_pro_score: cfg.targetMmluProScore,
+            bbh_score: cfg.targetBbhScore,
             carbon_intensity_g_per_kwh: cfg.carbonIntensityGPerKwh,
           });
           const afterRemote = await client.estimateCarbon({
@@ -80,8 +85,11 @@ export class PruneService {
             output_tokens: cfg.expectedOutputTokens,
             model_name: cfg.targetModelName,
             model_size_b: cfg.targetModelSizeB,
+            gpu_type: cfg.targetGpuType,
             latency_per_input_token_ms: cfg.latencyPerInputTokenMs,
             latency_per_output_token_ms: cfg.latencyPerOutputTokenMs,
+            mmlu_pro_score: cfg.targetMmluProScore,
+            bbh_score: cfg.targetBbhScore,
             carbon_intensity_g_per_kwh: cfg.carbonIntensityGPerKwh,
           });
           carbonBefore = this.mapRemoteEstimate(beforeRemote);

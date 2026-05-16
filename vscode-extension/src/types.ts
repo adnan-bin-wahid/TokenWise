@@ -27,16 +27,21 @@ export interface CarbonEstimateViewModel {
   co2Grams: number;
   carbonIntensityGPerKwh: number;
   modelFamily: string;
-  route: "xgboost_interpolation" | "ridge_extrapolation";
+  prefillRoute: "xgboost_interpolation" | "ridge_extrapolation";
+  decodeRoute: "xgboost_interpolation" | "ridge_extrapolation";
+  featuresSource: string;
 }
 
 export interface CarbonEstimateRequest {
   input_tokens: number;
   output_tokens: number;
   model_name: string;
-  model_size_b: number;
+  model_size_b?: number;
+  gpu_type: string;
   latency_per_input_token_ms: number;
   latency_per_output_token_ms: number;
+  mmlu_pro_score?: number;
+  bbh_score?: number;
   carbon_intensity_g_per_kwh: number;
 }
 
@@ -47,7 +52,9 @@ export interface CarbonEstimateResponse {
   co2_grams: number;
   carbon_intensity_g_per_kwh: number;
   model_name: string;
-  route: "xgboost_interpolation" | "ridge_extrapolation";
+  prefill_route: "xgboost_interpolation" | "ridge_extrapolation";
+  decode_route: "xgboost_interpolation" | "ridge_extrapolation";
+  features_source: string;
 }
 
 export interface CarbonSavingsViewModel {
