@@ -1,4 +1,10 @@
-import { HealthResponse, PruneRequest, PruneResponse } from "../types";
+import {
+  CarbonEstimateRequest,
+  CarbonEstimateResponse,
+  HealthResponse,
+  PruneRequest,
+  PruneResponse,
+} from "../types";
 import { TokenWiseConfig } from "./config";
 
 async function fetchWithTimeout(
@@ -51,5 +57,30 @@ export class TokenWiseApiClient {
     }
 
     return (await response.json()) as PruneResponse;
+  }
+
+  public async estimateCarbon(
+    request: CarbonEstimateRequest,
+  ): Promise<CarbonEstimateResponse> {
+    const response = await fetchWithTimeout(
+      `${this.config.apiUrl}/estimate-carbon`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request),
+      },
+      this.config.timeoutMs,
+    );
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(
+        `Carbon estimate request failed (${response.status}): ${body}`,
+      );
+    }
+
+    return (await response.json()) as CarbonEstimateResponse;
   }
 }

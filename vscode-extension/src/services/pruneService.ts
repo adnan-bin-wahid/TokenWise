@@ -1,12 +1,24 @@
 import * as vscode from "vscode";
 import { TokenWiseApiClient } from "./apiClient";
 import { getTokenWiseConfig } from "./config";
-import { PruneResultViewModel } from "../types";
+import { CarbonEstimateResponse, PruneResultViewModel } from "../types";
 import { estimateCarbon } from "./carbonEstimator";
 import { countTokens } from "./tokenCounter";
 
 export class PruneService {
   private sessionCo2GramsSaved = 0;
+
+  private mapRemoteEstimate(response: CarbonEstimateResponse) {
+    return {
+      prefillJoules: response.prefill_joules,
+      decodeJoules: response.decode_joules,
+      totalJoules: response.total_joules,
+      co2Grams: response.co2_grams,
+      carbonIntensityGPerKwh: response.carbon_intensity_g_per_kwh,
+      modelFamily: response.model_name,
+      route: response.route,
+    } as const;
+  }
 
   public async checkHealth(): Promise<string> {
     const client = new TokenWiseApiClient(getTokenWiseConfig());
@@ -50,25 +62,71 @@ export class PruneService {
       const originalInputTokens = countTokens(code);
       const prunedInputTokens = countTokens(response.pruned_code);
 
-      const carbonBefore = estimateCarbon({
-        inputTokens: originalInputTokens,
-        outputTokens: cfg.expectedOutputTokens,
-        modelFamily: cfg.targetModelName,
-        modelSizeB: cfg.targetModelSizeB,
-        latencyPerInputTokenMs: cfg.latencyPerInputTokenMs,
-        latencyPerOutputTokenMs: cfg.latencyPerOutputTokenMs,
-        carbonIntensityGPerKwh: cfg.carbonIntensityGPerKwh,
-      });
+      let carbonBefore;
+      let carbonAfter;
+      if (cfg.carbonEstimatorMode === "remote") {
+        try {
+          const beforeRemote = await client.estimateCarbon({
+            input_tokens: originalInputTokens,
+            output_tokens: cfg.expectedOutputTokens,
+            model_name: cfg.targetModelName,
+            model_size_b: cfg.targetModelSizeB,
+            latency_per_input_token_ms: cfg.latencyPerInputTokenMs,
+            latency_per_output_token_ms: cfg.latencyPerOutputTokenMs,
+            carbon_intensity_g_per_kwh: cfg.carbonIntensityGPerKwh,
+          });
+          const afterRemote = await client.estimateCarbon({
+            input_tokens: prunedInputTokens,
+            output_tokens: cfg.expectedOutputTokens,
+            model_name: cfg.targetModelName,
+            model_size_b: cfg.targetModelSizeB,
+            latency_per_input_token_ms: cfg.latencyPerInputTokenMs,
+            latency_per_output_token_ms: cfg.latencyPerOutputTokenMs,
+            carbon_intensity_g_per_kwh: cfg.carbonIntensityGPerKwh,
+          });
+          carbonBefore = this.mapRemoteEstimate(beforeRemote);
+          carbonAfter = this.mapRemoteEstimate(afterRemote);
+        } catch {
+          carbonBefore = estimateCarbon({
+            inputTokens: originalInputTokens,
+            outputTokens: cfg.expectedOutputTokens,
+            modelFamily: cfg.targetModelName,
+            modelSizeB: cfg.targetModelSizeB,
+            latencyPerInputTokenMs: cfg.latencyPerInputTokenMs,
+            latencyPerOutputTokenMs: cfg.latencyPerOutputTokenMs,
+            carbonIntensityGPerKwh: cfg.carbonIntensityGPerKwh,
+          });
+          carbonAfter = estimateCarbon({
+            inputTokens: prunedInputTokens,
+            outputTokens: cfg.expectedOutputTokens,
+            modelFamily: cfg.targetModelName,
+            modelSizeB: cfg.targetModelSizeB,
+            latencyPerInputTokenMs: cfg.latencyPerInputTokenMs,
+            latencyPerOutputTokenMs: cfg.latencyPerOutputTokenMs,
+            carbonIntensityGPerKwh: cfg.carbonIntensityGPerKwh,
+          });
+        }
+      } else {
+        carbonBefore = estimateCarbon({
+          inputTokens: originalInputTokens,
+          outputTokens: cfg.expectedOutputTokens,
+          modelFamily: cfg.targetModelName,
+          modelSizeB: cfg.targetModelSizeB,
+          latencyPerInputTokenMs: cfg.latencyPerInputTokenMs,
+          latencyPerOutputTokenMs: cfg.latencyPerOutputTokenMs,
+          carbonIntensityGPerKwh: cfg.carbonIntensityGPerKwh,
+        });
 
-      const carbonAfter = estimateCarbon({
-        inputTokens: prunedInputTokens,
-        outputTokens: cfg.expectedOutputTokens,
-        modelFamily: cfg.targetModelName,
-        modelSizeB: cfg.targetModelSizeB,
-        latencyPerInputTokenMs: cfg.latencyPerInputTokenMs,
-        latencyPerOutputTokenMs: cfg.latencyPerOutputTokenMs,
-        carbonIntensityGPerKwh: cfg.carbonIntensityGPerKwh,
-      });
+        carbonAfter = estimateCarbon({
+          inputTokens: prunedInputTokens,
+          outputTokens: cfg.expectedOutputTokens,
+          modelFamily: cfg.targetModelName,
+          modelSizeB: cfg.targetModelSizeB,
+          latencyPerInputTokenMs: cfg.latencyPerInputTokenMs,
+          latencyPerOutputTokenMs: cfg.latencyPerOutputTokenMs,
+          carbonIntensityGPerKwh: cfg.carbonIntensityGPerKwh,
+        });
+      }
 
       result.carbonBefore = carbonBefore;
       result.carbonAfter = carbonAfter;

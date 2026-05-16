@@ -70,6 +70,15 @@
           "default": true,
           "description": "Estimate before/after carbon impact for each prune result."
         },
+        "tokenWise.carbonEstimatorMode": {
+          "type": "string",
+          "default": "remote",
+          "enum": [
+            "remote",
+            "local"
+          ],
+          "description": "Use backend estimate-carbon endpoint (remote) or built-in estimator (local)."
+        },
         "tokenWise.targetModelName": {
           "type": "string",
           "default": "gpt-4o",

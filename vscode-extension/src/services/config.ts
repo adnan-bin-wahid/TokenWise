@@ -6,6 +6,7 @@ export interface TokenWiseConfig {
   defaultThreshold: number;
   autoOpenResultPanel: boolean;
   enableCarbonEstimation: boolean;
+  carbonEstimatorMode: "local" | "remote";
   targetModelName: string;
   targetModelSizeB: number;
   expectedOutputTokens: number;
@@ -25,6 +26,7 @@ export function getTokenWiseConfig(): TokenWiseConfig {
     defaultThreshold: Number(cfg.get("defaultThreshold", 0.45)),
     autoOpenResultPanel: Boolean(cfg.get("autoOpenResultPanel", true)),
     enableCarbonEstimation: Boolean(cfg.get("enableCarbonEstimation", true)),
+    carbonEstimatorMode: String(cfg.get("carbonEstimatorMode", "remote")) === "remote" ? "remote" : "local",
     targetModelName: String(cfg.get("targetModelName", "gpt-4o")),
     targetModelSizeB: Number(cfg.get("targetModelSizeB", 200)),
     expectedOutputTokens: Number(cfg.get("expectedOutputTokens", 256)),
