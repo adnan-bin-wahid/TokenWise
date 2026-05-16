@@ -10,11 +10,6 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:tokenwise.pruneSelected",
-    "onCommand:tokenwise.pruneCurrentFile",
-    "onCommand:tokenwise.checkHealth"
-  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
