@@ -5,9 +5,7 @@
       "type": "npm",
       "script": "compile",
       "label": "npm: compile",
-      "problemMatcher": [
-        "$tsc"
-      ],
+      "problemMatcher": ["$tsc"],
       "group": {
         "kind": "build",
         "isDefault": true
