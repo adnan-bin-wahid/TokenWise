@@ -48,7 +48,9 @@ function getConstants(modelFamily: string): ModelEnergyConstants {
   return MODEL_CONSTANTS[modelFamily] ?? MODEL_CONSTANTS.default;
 }
 
-function getRoute(modelSizeB: number): "xgboost_interpolation" | "ridge_extrapolation" {
+function getRoute(
+  modelSizeB: number,
+): "xgboost_interpolation" | "ridge_extrapolation" {
   return modelSizeB > 111 ? "ridge_extrapolation" : "xgboost_interpolation";
 }
 
@@ -61,9 +63,13 @@ export function estimateCarbon(input: CarbonEstimatorInput): CarbonEstimate {
   const latencyDecodeScale = Math.max(0.2, input.latencyPerOutputTokenMs / 1.0);
 
   const prefillJoules =
-    input.inputTokens * constants.prefillJoulesPerInputToken * latencyPrefillScale;
+    input.inputTokens *
+    constants.prefillJoulesPerInputToken *
+    latencyPrefillScale;
   const decodeJoules =
-    input.outputTokens * constants.decodeJoulesPerOutputToken * latencyDecodeScale;
+    input.outputTokens *
+    constants.decodeJoulesPerOutputToken *
+    latencyDecodeScale;
 
   const totalJoules = prefillJoules + decodeJoules;
   const co2Grams =

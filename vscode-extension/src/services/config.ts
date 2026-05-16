@@ -29,7 +29,10 @@ export function getTokenWiseConfig(): TokenWiseConfig {
     defaultThreshold: Number(cfg.get("defaultThreshold", 0.45)),
     autoOpenResultPanel: Boolean(cfg.get("autoOpenResultPanel", true)),
     enableCarbonEstimation: Boolean(cfg.get("enableCarbonEstimation", true)),
-    carbonEstimatorMode: String(cfg.get("carbonEstimatorMode", "remote")) === "remote" ? "remote" : "local",
+    carbonEstimatorMode:
+      String(cfg.get("carbonEstimatorMode", "remote")) === "remote"
+        ? "remote"
+        : "local",
     targetModelName: String(cfg.get("targetModelName", "gpt-4o")),
     targetModelSizeB: Number(cfg.get("targetModelSizeB", 200)),
     targetGpuType: String(cfg.get("targetGpuType", "nvidia-a100-80gb")),

@@ -5,6 +5,9 @@ export function countTokens(text: string): number {
     return encode(text).length;
   } catch {
     // Fallback for unexpected tokenizer errors.
-    return Math.max(0, text.trim().length === 0 ? 0 : Math.ceil(text.length / 4));
+    return Math.max(
+      0,
+      text.trim().length === 0 ? 0 : Math.ceil(text.length / 4),
+    );
   }
 }

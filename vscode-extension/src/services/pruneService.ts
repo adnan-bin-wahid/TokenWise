@@ -139,7 +139,8 @@ export class PruneService {
       result.carbonBefore = carbonBefore;
       result.carbonAfter = carbonAfter;
       result.carbonSavings = {
-        prefillJoulesSaved: carbonBefore.prefillJoules - carbonAfter.prefillJoules,
+        prefillJoulesSaved:
+          carbonBefore.prefillJoules - carbonAfter.prefillJoules,
         decodeJoulesSaved: carbonBefore.decodeJoules - carbonAfter.decodeJoules,
         totalJoulesSaved: carbonBefore.totalJoules - carbonAfter.totalJoules,
         co2GramsSaved: carbonBefore.co2Grams - carbonAfter.co2Grams,
