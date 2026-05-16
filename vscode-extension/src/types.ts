@@ -20,6 +20,23 @@ export interface HealthResponse {
   model_loaded: boolean;
 }
 
+export interface CarbonEstimateViewModel {
+  prefillJoules: number;
+  decodeJoules: number;
+  totalJoules: number;
+  co2Grams: number;
+  carbonIntensityGPerKwh: number;
+  modelFamily: string;
+  route: "xgboost_interpolation" | "ridge_extrapolation";
+}
+
+export interface CarbonSavingsViewModel {
+  prefillJoulesSaved: number;
+  decodeJoulesSaved: number;
+  totalJoulesSaved: number;
+  co2GramsSaved: number;
+}
+
 export interface PruneResultViewModel {
   query: string;
   score: number;
@@ -30,4 +47,7 @@ export interface PruneResultViewModel {
   modelInputTokenCount: number;
   reductionPercent: number;
   keptFrags: number[];
+  carbonBefore?: CarbonEstimateViewModel;
+  carbonAfter?: CarbonEstimateViewModel;
+  carbonSavings?: CarbonSavingsViewModel;
 }

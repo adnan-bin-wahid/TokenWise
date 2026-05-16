@@ -64,6 +64,46 @@
           "type": "boolean",
           "default": true,
           "description": "Open TokenWise result panel automatically after each prune."
+        },
+        "tokenWise.enableCarbonEstimation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Estimate before/after carbon impact for each prune result."
+        },
+        "tokenWise.targetModelName": {
+          "type": "string",
+          "default": "gpt-4o",
+          "description": "Target LLM family used for energy and carbon estimation."
+        },
+        "tokenWise.targetModelSizeB": {
+          "type": "number",
+          "default": 200,
+          "minimum": 1,
+          "description": "Target model size in billions of parameters."
+        },
+        "tokenWise.expectedOutputTokens": {
+          "type": "number",
+          "default": 256,
+          "minimum": 1,
+          "description": "Expected output token count used in prompt-level estimation."
+        },
+        "tokenWise.latencyPerInputTokenMs": {
+          "type": "number",
+          "default": 0.8,
+          "minimum": 0.01,
+          "description": "Estimated prefill latency per input token in milliseconds."
+        },
+        "tokenWise.latencyPerOutputTokenMs": {
+          "type": "number",
+          "default": 2.2,
+          "minimum": 0.01,
+          "description": "Estimated decode latency per output token in milliseconds."
+        },
+        "tokenWise.carbonIntensityGPerKwh": {
+          "type": "number",
+          "default": 475,
+          "minimum": 1,
+          "description": "Carbon intensity in grams CO2 per kWh for region-aware conversion."
         }
       }
     }
@@ -77,5 +117,8 @@
     "@types/node": "^20.14.11",
     "@types/vscode": "^1.95.0",
     "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "gpt-tokenizer": "^3.4.0"
   }
 }

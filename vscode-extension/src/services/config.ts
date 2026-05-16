@@ -5,6 +5,13 @@ export interface TokenWiseConfig {
   timeoutMs: number;
   defaultThreshold: number;
   autoOpenResultPanel: boolean;
+  enableCarbonEstimation: boolean;
+  targetModelName: string;
+  targetModelSizeB: number;
+  expectedOutputTokens: number;
+  latencyPerInputTokenMs: number;
+  latencyPerOutputTokenMs: number;
+  carbonIntensityGPerKwh: number;
 }
 
 export function getTokenWiseConfig(): TokenWiseConfig {
@@ -17,5 +24,12 @@ export function getTokenWiseConfig(): TokenWiseConfig {
     timeoutMs: Number(cfg.get("timeoutMs", 120000)),
     defaultThreshold: Number(cfg.get("defaultThreshold", 0.45)),
     autoOpenResultPanel: Boolean(cfg.get("autoOpenResultPanel", true)),
+    enableCarbonEstimation: Boolean(cfg.get("enableCarbonEstimation", true)),
+    targetModelName: String(cfg.get("targetModelName", "gpt-4o")),
+    targetModelSizeB: Number(cfg.get("targetModelSizeB", 200)),
+    expectedOutputTokens: Number(cfg.get("expectedOutputTokens", 256)),
+    latencyPerInputTokenMs: Number(cfg.get("latencyPerInputTokenMs", 0.8)),
+    latencyPerOutputTokenMs: Number(cfg.get("latencyPerOutputTokenMs", 2.2)),
+    carbonIntensityGPerKwh: Number(cfg.get("carbonIntensityGPerKwh", 475)),
   };
 }

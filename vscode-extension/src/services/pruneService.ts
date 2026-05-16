@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import { TokenWiseApiClient } from "./apiClient";
 import { getTokenWiseConfig } from "./config";
 import { PruneResultViewModel } from "../types";
+import { estimateCarbon } from "./carbonEstimator";
+import { countTokens } from "./tokenCounter";
 
 export class PruneService {
   public async checkHealth(): Promise<string> {
@@ -15,7 +17,8 @@ export class PruneService {
     code: string,
     threshold: number,
   ): Promise<PruneResultViewModel> {
-    const client = new TokenWiseApiClient(getTokenWiseConfig());
+    const cfg = getTokenWiseConfig();
+    const client = new TokenWiseApiClient(cfg);
     const response = await client.prune({ query, code, threshold });
 
     if (response.error_msg) {
@@ -29,7 +32,7 @@ export class PruneService {
           100
         : 0;
 
-    return {
+    const result: PruneResultViewModel = {
       query,
       score: response.score,
       originalCode: code,
@@ -40,5 +43,41 @@ export class PruneService {
       reductionPercent,
       keptFrags: response.kept_frags,
     };
+
+    if (cfg.enableCarbonEstimation) {
+      const originalInputTokens = countTokens(code);
+      const prunedInputTokens = countTokens(response.pruned_code);
+
+      const carbonBefore = estimateCarbon({
+        inputTokens: originalInputTokens,
+        outputTokens: cfg.expectedOutputTokens,
+        modelFamily: cfg.targetModelName,
+        modelSizeB: cfg.targetModelSizeB,
+        latencyPerInputTokenMs: cfg.latencyPerInputTokenMs,
+        latencyPerOutputTokenMs: cfg.latencyPerOutputTokenMs,
+        carbonIntensityGPerKwh: cfg.carbonIntensityGPerKwh,
+      });
+
+      const carbonAfter = estimateCarbon({
+        inputTokens: prunedInputTokens,
+        outputTokens: cfg.expectedOutputTokens,
+        modelFamily: cfg.targetModelName,
+        modelSizeB: cfg.targetModelSizeB,
+        latencyPerInputTokenMs: cfg.latencyPerInputTokenMs,
+        latencyPerOutputTokenMs: cfg.latencyPerOutputTokenMs,
+        carbonIntensityGPerKwh: cfg.carbonIntensityGPerKwh,
+      });
+
+      result.carbonBefore = carbonBefore;
+      result.carbonAfter = carbonAfter;
+      result.carbonSavings = {
+        prefillJoulesSaved: carbonBefore.prefillJoules - carbonAfter.prefillJoules,
+        decodeJoulesSaved: carbonBefore.decodeJoules - carbonAfter.decodeJoules,
+        totalJoulesSaved: carbonBefore.totalJoules - carbonAfter.totalJoules,
+        co2GramsSaved: carbonBefore.co2Grams - carbonAfter.co2Grams,
+      };
+    }
+
+    return result;
   }
 }
