@@ -1,0 +1,187 @@
+config.name,config.backend.name,config.backend.version,config.backend._target_,config.backend.task,config.backend.library,config.backend.model_type,config.backend.model,config.backend.processor,config.backend.device,config.backend.device_ids,config.backend.seed,config.backend.inter_op_num_threads,config.backend.intra_op_num_threads,config.backend.model_kwargs.trust_remote_code,config.backend.no_weights,config.backend.export,config.backend.use_cache,config.backend.use_merged,config.backend.half,config.backend.reshape,config.backend.quantization,config.backend.calibration,config.scenario.name,config.scenario._target_,config.scenario.iterations,config.scenario.duration,config.scenario.warmup_runs,config.scenario.input_shapes.batch_size,config.scenario.input_shapes.num_choices,config.scenario.input_shapes.sequence_length,config.scenario.new_tokens,config.scenario.memory,config.scenario.latency,config.scenario.energy,config.scenario.generate_kwargs.max_new_tokens,config.scenario.generate_kwargs.min_new_tokens,config.launcher.name,config.launcher._target_,config.launcher.device_isolation,config.launcher.device_isolation_action,config.launcher.numactl,config.launcher.start_method,config.environment.cpu,config.environment.cpu_count,config.environment.cpu_ram_mb,config.environment.system,config.environment.machine,config.environment.platform,config.environment.processor,config.environment.python_version,config.environment.optimum_benchmark_version,config.environment.optimum_benchmark_commit,config.environment.transformers_version,config.environment.transformers_commit,config.environment.accelerate_version,config.environment.accelerate_commit,config.environment.diffusers_version,config.environment.diffusers_commit,config.environment.optimum_version,config.environment.optimum_commit,config.environment.timm_version,config.environment.timm_commit,config.environment.peft_version,config.environment.peft_commit,config.print_report,config.log_report,report.traceback
+float32-eager-openvino,openvino,2024.4.1.dev20240926,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,llama,trl-internal-testing/tiny-random-LlamaForCausalLM,trl-internal-testing/tiny-random-LlamaForCausalLM,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,2,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,32,66326.188032,Linux,x86_64,Linux-5.10.226-214.880.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.45.2,,1.0.1,,,,1.23.2,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,gpt2,trl-internal-testing/dummy-GPT2-correct-vocab,trl-internal-testing/dummy-GPT2-correct-vocab,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,gpt2,datificate/gpt2-small-spanish,datificate/gpt2-small-spanish,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.4.1.dev20240926,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,deepseek_v2,deepseek-ai/DeepSeek-V2-Lite,deepseek-ai/DeepSeek-V2-Lite,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,2,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,32,66326.188032,Linux,x86_64,Linux-5.10.226-214.880.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.45.2,,1.0.1,,,,1.23.2,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 66, in launch
+    raise ChildProcessError(response[""traceback""])
+ChildProcessError: Traceback (most recent call last):
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 103, in target
+    report = worker(*worker_args)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 78, in run
+    report = scenario.run(backend)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/scenarios/inference/scenario.py"", line 89, in run
+    self.run_model_loading_tracking(backend)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/scenarios/inference/scenario.py"", line 168, in run_model_loading_tracking
+    backend.load()
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/backends/openvino/backend.py"", line 77, in load
+    self._load_ovmodel_with_no_weights()
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/backends/openvino/backend.py"", line 134, in _load_ovmodel_with_no_weights
+    self._load_ovmodel_from_pretrained()
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/backends/openvino/backend.py"", line 120, in _load_ovmodel_from_pretrained
+    self.pretrained_model = self.ovmodel_class.from_pretrained(
+  File ""/usr/local/lib/python3.10/dist-packages/optimum/intel/openvino/modeling_base.py"", line 465, in from_pretrained
+    return super().from_pretrained(
+  File ""/usr/local/lib/python3.10/dist-packages/optimum/modeling_base.py"", line 438, in from_pretrained
+    return from_pretrained_method(
+  File ""/usr/local/lib/python3.10/dist-packages/optimum/intel/openvino/modeling_decoder.py"", line 313, in _from_transformers
+    main_export(
+  File ""/usr/local/lib/python3.10/dist-packages/optimum/exporters/openvino/__main__.py"", line 245, in main_export
+    raise ValueError(
+ValueError: Trying to export a deepseek-v2 model, that is a custom or unsupported architecture, but no custom export configuration was passed as `custom_export_configs`. Please refer to https://huggingface.co/docs/optimum/main/en/exporters/onnx/usage_guides/export_a_model#custom-export-of-transformers-models for an example on how to export custom models. Please open an issue at https://github.com/huggingface/optimum-intel/issues if you would like the model type deepseek-v2 to be supported natively in the OpenVINO export.
+
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,llama,meta-llama/Meta-Llama-3-8B-Instruct,meta-llama/Meta-Llama-3-8B-Instruct,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,llama,meta-llama/Meta-Llama-3-8B,meta-llama/Meta-Llama-3-8B,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,llama,meta-llama/Llama-3.1-8B-Instruct,meta-llama/Llama-3.1-8B-Instruct,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,llama,meta-llama/Llama-3.1-405B,meta-llama/Llama-3.1-405B,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -9
+"
+float32-eager-openvino,openvino,2024.4.1.dev20240926,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,mistral,HuggingFaceH4/zephyr-7b-beta,HuggingFaceH4/zephyr-7b-beta,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,2,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,32,66326.188032,Linux,x86_64,Linux-5.10.226-214.880.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.45.2,,1.0.1,,,,1.23.2,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.4.1.dev20240926,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,qwen2,Qwen/Qwen2-0.5B,Qwen/Qwen2-0.5B,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,2,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,32,66326.188032,Linux,x86_64,Linux-5.10.226-214.880.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.45.2,,1.0.1,,,,1.23.2,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,llava,liuhaotian/llava-v1.5-7b,liuhaotian/llava-v1.5-7b,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -11
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,gpt2,distilbert/distilgpt2,distilbert/distilgpt2,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,bloom,bigscience/bloomz-560m,bigscience/bloomz-560m,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,opt,facebook/opt-125m,facebook/opt-125m,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,phi3,microsoft/Phi-3-mini-4k-instruct,microsoft/Phi-3-mini-4k-instruct,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,gpt2,openai-community/gpt2,openai-community/gpt2,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.4.1.dev20240926,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,gpt2,openai-community/gpt2-large,openai-community/gpt2-large,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,2,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,32,66326.188032,Linux,x86_64,Linux-5.10.226-214.880.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.45.2,,1.0.1,,,,1.23.2,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
+float32-eager-openvino,openvino,2024.5.0,optimum_benchmark.backends.openvino.backend.OVBackend,text-generation,transformers,gemma2,google/gemma-2-2b,google/gemma-2-2b,cpu,0,42,,,True,True,True,True,False,False,False,False,False,inference,optimum_benchmark.scenarios.inference.scenario.InferenceScenario,10,10,10,1,,256,,True,True,True,64,64,process,optimum_benchmark.launchers.process.launcher.ProcessLauncher,False,,False,spawn, Intel(R) Xeon(R) Platinum 8488C,96,199386.677248,Linux,x86_64,Linux-5.10.228-219.884.amzn2.x86_64-x86_64-with-glibc2.35,x86_64,3.10.12,0.5.0.dev0,,4.46.3,,1.2.0,,,,1.23.3,,,,,,False,True,"Traceback (most recent call last):
+  File ""/workspace/llm_perf/common/benchmark_runner.py"", line 148, in execute_and_log_benchmark
+    benchmark_report = Benchmark.launch(benchmark_config)
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/benchmark/base.py"", line 51, in launch
+    report = launcher.launch(worker=Benchmark.run, worker_args=[config])
+  File ""/usr/local/lib/python3.10/dist-packages/optimum_benchmark/launchers/process/launcher.py"", line 57, in launch
+    raise RuntimeError(f""Isolated process exited with non-zero code {isolated_process.exitcode}"")
+RuntimeError: Isolated process exited with non-zero code -6
+"
