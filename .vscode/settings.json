@@ -1,0 +1,7 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/carbon-engine/src",
+    "${workspaceFolder}/swe-pruner/swe-pruner/src"
+  ]
+}
