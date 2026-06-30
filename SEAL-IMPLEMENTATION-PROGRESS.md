@@ -437,16 +437,16 @@ async def estimate_carbon(request: CarbonEstimateRequest) -> CarbonEstimateRespo
 | ----- | ---- | -------------------------- | -------------- | ------------------------------------ |
 | **A** | A1   | LLM-Perf download          | ✅ DONE        | None                                 |
 | **A** | A2   | Open LLM download          | ✅ DONE        | None                                 |
-| **B** | B1   | Dataset merge              | ❌ NOT STARTED | Model name canonicalization needed   |
-| **B** | B2   | Data cleanup               | ❌ NOT STARTED | Depends on B1                        |
-| **B** | B3   | Feature engineering        | ❌ NOT STARTED | Depends on B2; model registry needed |
-| **B** | B4   | Prefill/Decode split       | ❌ NOT STARTED | Depends on B3                        |
-| **B** | B5   | Interpolation/Extrap split | ❌ NOT STARTED | Depends on B4                        |
-| **C** | C1   | XGBoost training           | ❌ NOT STARTED | Depends on B5                        |
-| **C** | C2   | Ridge training             | ❌ NOT STARTED | Depends on B5                        |
-| **C** | C3   | Routing logic              | ⏳ PARTIAL     | Depends on C1, C2                    |
-| **D** | D1   | External validation        | ❌ NOT STARTED | Depends on C1, C2, C3                |
-| **E** | E1   | Backend API                | ❌ NOT STARTED | Depends on C3, D1                    |
+| **B** | B1   | Dataset merge              | ✅ DONE        | None                                 |
+| **B** | B2   | Data cleanup               | ✅ DONE        | None                                 |
+| **B** | B3   | Feature engineering        | ✅ DONE        | None                                 |
+| **B** | B4   | Prefill/Decode split       | ✅ DONE        | None                                 |
+| **B** | B5   | Interpolation/Extrap split | ✅ DONE        | None                                 |
+| **C** | C1   | XGBoost training           | ✅ DONE        | None                                 |
+| **C** | C2   | Ridge training             | ✅ DONE        | None                                 |
+| **C** | C3   | Routing logic              | ✅ DONE        | None                                 |
+| **D** | D1   | External validation        | ✅ DONE        | None                                 |
+| **E** | E1   | Backend API                | ✅ DONE        | None                                 |
 
 ---
 
