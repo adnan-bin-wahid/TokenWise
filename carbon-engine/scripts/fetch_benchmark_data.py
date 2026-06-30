@@ -228,18 +228,42 @@ def build_llm_perf_table(data_dir: Path) -> tuple[pd.DataFrame, dict]:
     else:
         num_out_tok = 128  # default if column missing
 
+    import numpy as np
+
+    num_in = _to_numeric(raw[in_tok_col])
+    num_out = _to_numeric(raw[out_tok_col]) if (out_tok_col and out_tok_col in raw.columns) else pd.Series([128.0]*len(raw), index=raw.index)
+    num_out = num_out.fillna(128.0)
+
+    raw_lat_in = _to_numeric(raw[lat_in_col])
+    raw_lat_out = _to_numeric(raw[lat_out_col])
+
+    # Convert total latency in seconds to ms per token:
+    # (seconds * 1000) / num_tokens
+    lat_in_ms_tok = (raw_lat_in * 1000.0) / num_in
+    lat_out_ms_tok = (raw_lat_out * 1000.0) / num_out
+
+    # Convert measured energy in kWh to Joules:
+    # kWh * 3,600,000
+    raw_energy_in = _to_numeric(raw[prefill_energy_col]) if (prefill_energy_col and prefill_energy_col in raw.columns) else pd.Series([np.nan]*len(raw), index=raw.index)
+    raw_energy_out = _to_numeric(raw[decode_energy_col]) if (decode_energy_col and decode_energy_col in raw.columns) else pd.Series([np.nan]*len(raw), index=raw.index)
+
+    energy_in_j = raw_energy_in * 3600000.0
+    energy_out_j = raw_energy_out * 3600000.0
+
     out = pd.DataFrame(
         {
             "model_name": _to_text(raw[model_col]),
             "precision": _to_text(raw[precision_col]) if precision_col else "unknown",
-            "num_input_tokens": _to_numeric(raw[in_tok_col]),
-            "num_output_tokens": num_out_tok,
-            "latency_per_input_token_ms": _to_numeric(raw[lat_in_col]),
-            "latency_per_output_token_ms": _to_numeric(raw[lat_out_col]),
-            "prefill_energy_j": _to_numeric(raw[prefill_energy_col]),
-            "decode_energy_j": _to_numeric(raw[decode_energy_col]),
+            "num_input_tokens": num_in,
+            "num_output_tokens": num_out,
+            "latency_per_input_token_ms": lat_in_ms_tok,
+            "latency_per_output_token_ms": lat_out_ms_tok,
+            "prefill_energy_j": energy_in_j,
+            "decode_energy_j": energy_out_j,
             "gpu_type": _to_text(raw[gpu_col]),
             "source_file": _to_text(raw["source_file"]),
+            "_raw_lat_in": raw_lat_in,
+            "_raw_lat_out": raw_lat_out,
         }
     )
 
@@ -288,25 +312,19 @@ def build_llm_perf_table(data_dir: Path) -> tuple[pd.DataFrame, dict]:
         out[_c] = pd.to_numeric(out[_c], errors="coerce").astype("float64")
 
     # Synthesize energy where measurement is absent:
-    #   prefill_energy_j = TDP × (prefill_latency_ms × n_input_tokens / 1000)
-    #   decode_energy_j  = TDP × (decode_latency_ms  × n_output_tokens / 1000)
     missing_prefill = out["prefill_energy_j"].isna()
     missing_decode = out["decode_energy_j"].isna()
     
     out.loc[missing_prefill, "prefill_energy_j"] = (
         out.loc[missing_prefill, "_tdp_w"]
-        * out.loc[missing_prefill, "latency_per_input_token_ms"]
-        * out.loc[missing_prefill, "num_input_tokens"]
-        / 1000.0
+        * out.loc[missing_prefill, "_raw_lat_in"]
     )
     out.loc[missing_decode, "decode_energy_j"] = (
         out.loc[missing_decode, "_tdp_w"]
-        * out.loc[missing_decode, "latency_per_output_token_ms"]
-        * out.loc[missing_decode, "num_output_tokens"]
-        / 1000.0
+        * out.loc[missing_decode, "_raw_lat_out"]
     )
     
-    out = out.drop(columns=["_tdp_w"])
+    out = out.drop(columns=["_tdp_w", "_raw_lat_in", "_raw_lat_out"])
     out = out.dropna(subset=["prefill_energy_j", "decode_energy_j"])
 
     meta = {

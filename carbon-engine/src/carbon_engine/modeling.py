@@ -49,13 +49,9 @@ def _fit_xgb(x: pd.DataFrame, y: pd.Series):
         raise RuntimeError("xgboost is required for interpolation models. Install xgboost first.")
 
     model = XGBRegressor(
-        n_estimators=400,
-        max_depth=8,
-        learning_rate=0.05,
-        subsample=0.9,
-        colsample_bytree=0.9,
-        reg_alpha=0.0,
-        reg_lambda=1.0,
+        n_estimators=100,
+        max_depth=3,
+        learning_rate=0.3,
         objective="reg:squarederror",
         random_state=42,
     )
@@ -83,11 +79,9 @@ def _train_one(
         if XGBRegressor is None:
             raise RuntimeError("xgboost is required for interpolation models. Install xgboost first.")
         probe_model = XGBRegressor(
-            n_estimators=200,
-            max_depth=6,
-            learning_rate=0.08,
-            subsample=0.9,
-            colsample_bytree=0.9,
+            n_estimators=100,
+            max_depth=3,
+            learning_rate=0.3,
             objective="reg:squarederror",
             random_state=42,
         )

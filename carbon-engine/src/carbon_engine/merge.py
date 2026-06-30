@@ -11,6 +11,7 @@ from .schema import (
     MergeStats,
     canonicalize_model_name,
     canonicalize_precision,
+    canonicalize_gpu_type,
 )
 
 
@@ -24,6 +25,8 @@ def _normalize_join_keys(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
     out["model_name"] = out["model_name"].astype(str).map(canonicalize_model_name)
     out["precision"] = out["precision"].astype(str).map(canonicalize_precision)
+    if "gpu_type" in out.columns:
+        out["gpu_type"] = out["gpu_type"].astype(str).map(canonicalize_gpu_type)
     return out
 
 
@@ -48,7 +51,7 @@ def merge_benchmark_tables(llm_perf_df: pd.DataFrame, open_llm_df: pd.DataFrame)
         how="inner",
     )
 
-    deduped = merged.drop_duplicates(subset=["model_name", "precision", "num_input_tokens", "num_output_tokens"])
+    deduped = merged.drop_duplicates(subset=["model_name", "precision", "num_input_tokens", "num_output_tokens", "gpu_type"])
     before_drop_na = len(deduped)
     filtered = deduped.dropna(subset=MERGED_REQUIRED_COLUMNS)
 
