@@ -21,10 +21,23 @@ Follow this guide to demonstrate all the features of the project in front of you
 ## 2. Test Environment Setup
 
 ### 2.1 Launch the Backend Service
-Start the FastAPI server inside your workspace directory. The server is optimized in single-threaded CPU/GPU configurations to prevent event loop thread blocks:
+Start the FastAPI server inside your workspace directory. Depending on your terminal choice, use the appropriate command below:
+
+**PowerShell**:
 ```powershell
-# Set path environments and run server
 $env:PYTHONPATH="swe-pruner/swe-pruner/src"; $env:SWEPRUNER_MODEL_PATH="swe-pruner/swe-pruner/model"; .venv\Scripts\python -m uvicorn swe_pruner.online_serving:app --host 127.0.0.1 --port 8000
+```
+
+**Git Bash / Linux Shell**:
+```bash
+PYTHONPATH="swe-pruner/swe-pruner/src" SWEPRUNER_MODEL_PATH="swe-pruner/swe-pruner/model" .venv/Scripts/python -m uvicorn swe_pruner.online_serving:app --host 127.0.0.1 --port 8000
+```
+
+**Windows Command Prompt (CMD)**:
+```cmd
+set PYTHONPATH=swe-pruner/swe-pruner/src
+set SWEPRUNER_MODEL_PATH=swe-pruner/swe-pruner/model
+.venv\Scripts\python -m uvicorn swe_pruner.online_serving:app --host 127.0.0.1 --port 8000
 ```
 * **Expected Result**: 
   ```
