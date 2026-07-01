@@ -24,6 +24,10 @@
       {
         "command": "tokenwise.checkHealth",
         "title": "TokenWise: Check Backend Health"
+      },
+      {
+        "command": "tokenwise.buildRepositoryContext",
+        "title": "TokenWise: Build Repository Context"
       }
     ],
     "menus": {
@@ -36,6 +40,10 @@
         {
           "command": "tokenwise.pruneCurrentFile",
           "group": "navigation@51"
+        },
+        {
+          "command": "tokenwise.buildRepositoryContext",
+          "group": "navigation@52"
         }
       ]
     },
