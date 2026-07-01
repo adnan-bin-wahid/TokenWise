@@ -4,6 +4,7 @@ import { ResultPanel } from "./ui/resultPanel";
 import { createPruneSelectedCommand } from "./commands/pruneSelected";
 import { createPruneCurrentFileCommand } from "./commands/pruneCurrentFile";
 import { createCheckHealthCommand } from "./commands/checkHealth";
+import { createBuildRepositoryContextCommand } from "./commands/buildRepositoryContext";
 
 export function activate(context: vscode.ExtensionContext): void {
   const service = new PruneService();
@@ -53,6 +54,10 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand(
       "tokenwise.checkHealth",
       createCheckHealthCommand(service),
+    ),
+    vscode.commands.registerCommand(
+      "tokenwise.buildRepositoryContext",
+      createBuildRepositoryContextCommand(panel, context.extensionUri),
     ),
   );
 }
