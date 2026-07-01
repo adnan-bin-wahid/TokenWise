@@ -146,7 +146,7 @@ set SWEPRUNER_MODEL_PATH=swe-pruner/swe-pruner/model
 ---
 
 ### Scenario 7: Resilient Error Handling (Downtime Fallback)
-* **Objective**: Ensure that offline connections or backend issues do not crash the extension.
+* **Objective**: Verify that offline connections or backend issues do not crash the extension.
 * **Steps**:
   1. Kill the backend terminal process (Press `Ctrl+C` in your backend server window).
   2. Run the `TokenWise: Check Backend Health` command.
@@ -155,3 +155,21 @@ set SWEPRUNER_MODEL_PATH=swe-pruner/swe-pruner/model
   * The Health check fails gracefully with: `TokenWise health check failed: FetchError / Connection Refused`.
   * Pruning fails gracefully with: `TokenWise prune failed: FetchError`.
   * The editor remains fully responsive without freezing or crashing.
+
+---
+
+### Scenario 8: Local LLM Goal Synthesis Integration Check
+* **Objective**: Verify that the local LLM query-expansion and structured Goal Synthesis layer are fully integrated and running perfectly.
+* **Steps**:
+  1. Open a new terminal and start the mock local LLM server (simulates Ollama/LM Studio):
+     ```bash
+     .venv/Scripts/python mock_llm_server.py
+     ```
+  2. In the Extension Host, trigger the **`TokenWise: Build Repository Context`** command on `main.py`.
+  3. Input query: `fix backend startup port conflict`.
+  4. Look at the uvicorn backend server logs.
+* **Expected Result**:
+  * The mock LLM server console will print the incoming chat completion prompt showing that the extension host configurations were successfully processed.
+  * The backend FastAPI logs will print:
+    `WorkspacePrune: Found 1 rank candidates and 7 skipped candidates...` without the connection warning, proving it queried the local LLM endpoint and processed the response successfully.
+  * The WebView result panel will populate with the structured goal returned by the local model.
