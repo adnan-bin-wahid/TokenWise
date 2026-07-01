@@ -1,128 +1,144 @@
-# TokenWise / SWE-Pruner v2 - Comprehensive Test Report
+# TokenWise / SWE-Pruner v2 - Comprehensive Demonstration & Test Report
 
-This report documents the E2E verification plan, testing scenarios, expected behavior, and verification results for the **TokenWise v2** extension and **SWE-Pruner** backend service. Follow this guide step-by-step to test the extension yourself.
+This document serves as a step-by-step manual testing guide and verification report for the **TokenWise v2** VS Code extension and the **SWE-Pruner** FastAPI backend service. 
+
+Follow this guide to demonstrate all the features of the project in front of your supervisor. It covers every capability, option, and edge-case scenario.
 
 ---
 
-## 1. Test Setup & Initialization
+## 1. Core Features Overview
 
-### 1.1 Start Backend Server
-Run this command in the terminal inside your workspace directory to start the optimized FastAPI service (configured in single-thread mode to prevent OpenMP/proactor thread locks):
+1. **Active Health Monitoring**: Real-time checking of the backend service and verification that weights are loaded.
+2. **Single-File Task-Aware Code Pruning**: Neural line-level importance ranking to discard boilerplate while keeping lines relevant to the developer's goal.
+3. **Multi-File Workspace Context Pruning (v2)**: Repository-wide indexing, call-graph expansion, neural candidate reranking, and 3-tier prompt packaging.
+4. **SEAL Carbon Estimator & Session Savings**: Tracking energy in Joules (J) and CO2 in grams (g) saved by pruning prompts. Shows cumulative savings in the VS Code status bar.
+5. **Interactive Diff Webview**: Side-by-side comparison styled natively with VS Code theme variables, including "Copy to Clipboard" and "Insert at Cursor" triggers.
+6. **Local LLM Configurations**: Custom settings to override the OpenAI-compatible endpoint URL and model identifier for local goal synthesis (e.g. Ollama/LM Studio).
+7. **Connection Resilience & Fallbacks**: Graceful fallbacks when local LLMs or remote carbon estimators are offline.
+
+---
+
+## 2. Test Environment Setup
+
+### 2.1 Launch the Backend Service
+Start the FastAPI server inside your workspace directory. The server is optimized in single-threaded CPU/GPU configurations to prevent event loop thread blocks:
 ```powershell
+# Set path environments and run server
 $env:PYTHONPATH="swe-pruner/swe-pruner/src"; $env:SWEPRUNER_MODEL_PATH="swe-pruner/swe-pruner/model"; .venv\Scripts\python -m uvicorn swe_pruner.online_serving:app --host 127.0.0.1 --port 8000
 ```
-* **Expected Output**: 
+* **Expected Result**: 
   ```
   INFO:swe_pruner.online_serving:Model loaded successfully from swe-pruner/swe-pruner/model
-  INFO:     Application startup complete.
   INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
   ```
 
-### 1.2 Open VS Code Extension Developer Host
-To launch the VS Code window with the TokenWise extension active:
-1. Open a new terminal and navigate to `e:\A A SPL3\part-2\swe-pruner\vscode-extension`.
-2. Run `npm run compile` to build the typescript files.
-3. Launch the host window targeting the test project:
+### 2.2 Launch the Extension Host
+1. Open a terminal, go to `e:\A A SPL3\part-2\swe-pruner\vscode-extension`.
+2. Run `npm run compile` to build TypeScript code.
+3. Launch the Extension Host window targeting the test project workspace:
    ```powershell
    code --extensionDevelopmentPath="e:\A A SPL3\part-2\swe-pruner\vscode-extension" "E:\A A SPL3\test-project2"
    ```
-* **Expected Output**: A new VS Code instance opens showing the `test-project2` workspace. The Status Bar in the bottom left displays: `$(filter) TokenWise` (leaf/filter icon).
-
-### 1.3 Local LLM Configurations
-Verify the newly implemented local LLM configuration settings:
-1. Open VS Code Settings (`Ctrl+,`).
-2. Search for `TokenWise: Local Llm`.
-3. You will see two properties:
-   - `tokenWise.localLlmUrl`: The API endpoint URL for your local LLM (defaults to `"http://127.0.0.1:11434/v1"`).
-   - `tokenWise.localLlmModelName`: The model name identifier (defaults to `"qwen2.5-coder:1.5b-instruct-q4_k_m"`).
-4. These properties are dynamically fetched and sent to the backend to customize query expansion and goal synthesis.
+* **Expected Result**: A new VS Code instance opens. The bottom left status bar displays `$(filter) TokenWise` (a filter icon).
 
 ---
 
-## 2. Step-by-Step Testing Scenarios
+## 3. Step-by-Step Testing Scenarios
 
-### Scenario 1: Health & Connectivity Verification
-* **Objective**: Confirm the extension is communicating with the local FastAPI service.
+### Scenario 1: Backend Health Check
+* **Objective**: Verify that the extension can connect to the server and detect the loaded neural model.
 * **Steps**:
-  1. Inside the Extension Developer Host, press `Ctrl+Shift+P` (or `F1`).
-  2. Search for and execute **`TokenWise: Check Backend Health`**.
-* **Expected Result**: A VS Code info toast appears in the bottom right corner showing:
+  1. In the Extension Host, open the Command Palette (`Ctrl+Shift+P` or `F1`).
+  2. Search for and select: **`TokenWise: Check Backend Health`**.
+* **Expected Result**: An info notification toast appears in the bottom right corner:
   `TokenWise backend healthy. Model: swe-pruner/swe-pruner/model loaded.`
 
 ---
 
-### Scenario 2: Single-File Selected Code Pruning
-* **Objective**: Select a chunk of code in an active editor, query it with a query intent and threshold, and verify line-level pruning.
+### Scenario 2: User Settings & Local LLM Overrides
+* **Objective**: Confirm that user-configured properties are registered and override default connections.
 * **Steps**:
-  1. Open the file `main.py` in the Extension Host editor.
-  2. Select the `login` function definition (lines 20-30).
-  3. Right-click and choose **`TokenWise: Prune Selected Code`**.
-  4. Query: `Check login details and session creation`.
-  5. Threshold: `0.45`.
-* **Expected Result**:
-  * The TokenWise Result panel opens automatically.
-  * Webview background, text, borders, and buttons match your current VS Code theme colors.
-  * Side-by-side comparison: original code on the left, pruned code on the right showing kept lines and `(filtered X lines)` placeholders for pruned blocks.
-  * Displays: Similarity Score, Token counts, and Token Reduction percentage.
+  1. Open VS Code Settings (`Ctrl+,`).
+  2. Search for `TokenWise` to inspect the available settings:
+     * `tokenWise.apiUrl`: Backend address.
+     * `tokenWise.localLlmUrl`: Goal Generator LLM endpoint (default: `http://127.0.0.1:11434/v1`).
+     * `tokenWise.localLlmModelName`: Goal Generator model (default: `qwen2.5-coder:1.5b-instruct-q4_k_m`).
+     * `tokenWise.enableCarbonEstimation`: Toggle carbon footprint math.
+     * `tokenWise.carbonEstimatorMode`: Choose `remote` (uses backend) or `local` (uses javascript logic).
+  3. Modify `tokenWise.localLlmUrl` to `http://127.0.0.1:9999/v1` and save.
+* **Expected Result**: The extension immediately reads the modified settings. When running a workspace prune, the backend tries to call `http://127.0.0.1:9999/v1` and log it. (Restore it to the default `http://127.0.0.1:11434/v1` after testing).
 
 ---
 
-### Scenario 3: Single-File Full Text Pruning
-* **Objective**: Prune the entire active editor contents without selecting text.
+### Scenario 3: Selected Code Line Pruning & Carbon Status Bar
+* **Objective**: Neural prune a selected block of code and verify that it updates the status bar with carbon savings.
 * **Steps**:
-  1. Clear any active text selection in `main.py`.
+  1. Open `main.py` inside the Extension Host editor.
+  2. Highlight the `login` function definition (lines 20 to 30).
+  3. Right-click the highlighted code and choose **`TokenWise: Prune Selected Code`**.
+  4. Query: `Identify credentials validation and session generation`.
+  5. Threshold: `0.45` (default).
+* **Expected Result**:
+  * A progress notification is displayed while pruning is in progress.
+  * The TokenWise Result panel opens as a webview tab, styled natively with your active VS Code theme colors (adapts to light/dark).
+  * Original and Pruned code panes are displayed side-by-side. Kept lines are visible; pruned lines display a placeholder like `(filtered X lines)`.
+  * The **Carbon Footprint Estimation** section displays energy (Joules) and CO2 (grams) before and after, showing the savings.
+  * Look at the bottom-left VS Code Status Bar. It should update to:
+    `$(leaf) TokenWise 0.XXXXXXg saved` (with a green leaf icon showing cumulative saved session carbon).
+
+---
+
+### Scenario 4: Full File Code Pruning
+* **Objective**: Prune the entire active editor without any text selection.
+* **Steps**:
+  1. Focused on `main.py`, clear your text selection.
   2. Press `Ctrl+Shift+P` and choose **`TokenWise: Prune Current File`**.
-  3. Query: `Identify greeting endpoints`.
+  3. Query: `Locate greeting functions`.
   4. Threshold: `0.40`.
 * **Expected Result**:
   * The extension automatically extracts the entire file content.
-  * Result panel updates, showing line-level pruning for the full file.
+  * The Result webview panel updates with the full file line-level pruning comparison.
+  * The status bar cumulative carbon value increases.
 
 ---
 
-### Scenario 4: Multi-File Workspace Context Pruning (v2 Feature)
-* **Objective**: Build structured task-aware goal context spanning imports, call graphs, and tests.
+### Scenario 5: Multi-File Workspace Context Pruning (v2 Integration)
+* **Objective**: Synthesize a structured task-aware goal from diagnostics + active symbol, search imports/dependencies, and pack a multi-tier context.
 * **Steps**:
-  1. Focus the active editor on `main.py`.
-  2. Right-click inside the editor and choose **`TokenWise: Build Repository Context`**.
-  3. Query: `fix backend startup port conflict`.
-  4. Threshold: `0.45` (read from Settings config `tokenWise.defaultThreshold`).
+  1. In `main.py`, write a syntax error or warning (e.g. call a non-existing method `auth.validate()`) so that a diagnostic squiggly error appears.
+  2. Place your cursor on the word `serve` (active symbol).
+  3. Right-click inside `main.py` and choose: **`TokenWise: Build Repository Context`**.
+  4. Query: `fix backend startup port conflict`.
+  5. Threshold: `0.45`.
 * **Expected Result**:
-  * The backend indexes the workspace (21 files), builds the call graph, constructs the structured goal (extracts query words `conflict`, `port`, `serve` as validation identifiers), and traverses the dependency graph.
-  * The Webview panel opens showing the **Multi-File Unified Context**:
-    * **Tier 1 (Active File `main.py`)**: Pruned line-by-line using the neural model.
-    * **Tier 3 (Imports/Dependencies e.g. `database.py`, `user.py`)**: Interface declarations only (class/method definitions), saving up to **90%+** tokens.
+  * The backend indexes all 21 files, builds the call graph, parses the query into a structured goal (extracts validation identifiers `port`, `serve`, `conflict`, `backend`), and traverses the dependency graph.
+  * The Result Panel displays a **Multi-File Context**:
+    * **Tier 1 (Active file `main.py`)**: Neural model line-pruned code.
+    * **Tier 3 (Dependencies/Imports e.g. `database.py`, `user.py`)**: Interface declarations only (class definitions, function headers, method signatures).
+  * Original tokens (978) are pruned down to ~340 tokens (**~65% tokens saved**), providing a highly dense prompt for LLM ingestion.
 
 ---
 
-### Scenario 5: Webview UI Interactions
-* **Objective**: Test copying and inserting pruned code.
+### Scenario 6: Interactive WebView UI Actions
+* **Objective**: Copy the pruned context to the clipboard and insert it into the active editor.
 * **Steps**:
-  1. Run any pruning scenario to open the Result Panel.
-  2. Click **`Copy Pruned Code`** at the top right of the panel. Try pasting it somewhere to verify clipboard integration.
-  3. Place your cursor inside an empty line in the editor, and click **`Insert At Cursor`** in the webview.
+  1. In the opened Result Webview, click the **`Copy Pruned Code`** button.
+  2. Open a scratch file and press `Ctrl+V`. Verify that the pruned code was pasted successfully.
+  3. Position your editor cursor on an empty line in `main.py`.
+  4. Click the **`Insert At Cursor`** button in the webview.
 * **Expected Result**:
-  * `Copy` successfully copies the pruned code block into your system clipboard.
-  * `Insert` inserts the pruned text directly at the active cursor position in your editor.
+  * `Copy` copies the pruned code to the clipboard.
+  * `Insert` inserts the pruned code directly at the cursor line in `main.py`.
 
 ---
 
-### Scenario 6: Carbon Impact Estimations
-* **Objective**: Verify SEAL prompt-level carbon impact values.
+### Scenario 7: Resilient Error Handling (Downtime Fallback)
+* **Objective**: Ensure that offline connections or backend issues do not crash the extension.
 * **Steps**:
-  1. Locate the **Carbon Estimation** section in the Result Panel.
-  2. Compare Prefill/Decode energy consumption and CO2 emissions before and after pruning.
-* **Expected Result**:
-  * Displays saved energy in Joules (J) and saved CO2 in grams (g).
-  * Shows estimation routes (`direct_lookup` or `ridge_extrapolation`).
-
----
-
-### Scenario 7: Connection Failures & Error Handling
-* **Objective**: Verify that backend downtime doesn't freeze the editor.
-* **Steps**:
-  1. Kill the backend terminal server process (Press `Ctrl+C` in the server terminal).
+  1. Kill the backend terminal process (Press `Ctrl+C` in your backend server window).
   2. Run the `TokenWise: Check Backend Health` command.
+  3. Run the `TokenWise: Prune Selected Code` command.
 * **Expected Result**:
-  * The command exits cleanly and displays: `TokenWise health check failed: FetchError/Connection refused`.
-  * The VS Code UI remains fully responsive.
+  * The Health check fails gracefully with: `TokenWise health check failed: FetchError / Connection Refused`.
+  * Pruning fails gracefully with: `TokenWise prune failed: FetchError`.
+  * The editor remains fully responsive without freezing or crashing.
