@@ -77,6 +77,8 @@ export function createBuildRepositoryContextCommand(
             selected_code: selectedCode,
             diagnostics,
             threshold,
+            local_llm_url: cfg.localLlmUrl,
+            local_llm_model: cfg.localLlmModelName,
           });
 
           // Show in webview panel

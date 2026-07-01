@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 
 export interface TokenWiseConfig {
   apiUrl: string;
+  localLlmUrl: string;
+  localLlmModelName: string;
   timeoutMs: number;
   defaultThreshold: number;
   autoOpenResultPanel: boolean;
@@ -25,6 +27,11 @@ export function getTokenWiseConfig(): TokenWiseConfig {
       /\/$/,
       "",
     ),
+    localLlmUrl: String(cfg.get("localLlmUrl", "http://127.0.0.1:11434/v1")).replace(
+      /\/$/,
+      "",
+    ),
+    localLlmModelName: String(cfg.get("localLlmModelName", "qwen2.5-coder:1.5b-instruct-q4_k_m")),
     timeoutMs: Number(cfg.get("timeoutMs", 120000)),
     defaultThreshold: Number(cfg.get("defaultThreshold", 0.45)),
     autoOpenResultPanel: Boolean(cfg.get("autoOpenResultPanel", true)),

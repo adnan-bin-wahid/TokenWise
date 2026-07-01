@@ -88,6 +88,8 @@ export interface WorkspacePruneRequest {
   selected_code?: string;
   diagnostics: string[];
   threshold: number;
+  local_llm_url?: string;
+  local_llm_model?: string;
 }
 
 export interface WorkspaceFilePruneResult {
