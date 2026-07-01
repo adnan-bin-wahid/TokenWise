@@ -28,6 +28,15 @@ To launch the VS Code window with the TokenWise extension active:
    ```
 * **Expected Output**: A new VS Code instance opens showing the `test-project2` workspace. The Status Bar in the bottom left displays: `$(filter) TokenWise` (leaf/filter icon).
 
+### 1.3 Local LLM Configurations
+Verify the newly implemented local LLM configuration settings:
+1. Open VS Code Settings (`Ctrl+,`).
+2. Search for `TokenWise: Local Llm`.
+3. You will see two properties:
+   - `tokenWise.localLlmUrl`: The API endpoint URL for your local LLM (defaults to `"http://127.0.0.1:11434/v1"`).
+   - `tokenWise.localLlmModelName`: The model name identifier (defaults to `"qwen2.5-coder:1.5b-instruct-q4_k_m"`).
+4. These properties are dynamically fetched and sent to the backend to customize query expansion and goal synthesis.
+
 ---
 
 ## 2. Step-by-Step Testing Scenarios
