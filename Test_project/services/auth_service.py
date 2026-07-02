@@ -22,9 +22,6 @@ class AuthService:
         )
         self._users[admin.username] = admin
 
-    def authenticate_user(self, username: str, password_raw: str) -> str | None:
-        """Validates credentials and returns a signed JWT session token."""
-        user = self._users.get(username)
         if not user:
             log_audit(username, "login", "FAILED_USER_NOT_FOUND")
             return None
