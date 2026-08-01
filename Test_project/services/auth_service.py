@@ -70,7 +70,7 @@ class AuthService:
     def revoke_session(self, session_id: str) -> bool:
         """Revokes a session by ID."""
         session = self._sessions.get(session_id)
-        if session:
+        if session: 
             session.is_revoked = True
             log_audit(session.user_id, "logout", "SUCCESS")
             return True
