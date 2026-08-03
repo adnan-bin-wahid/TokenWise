@@ -4,6 +4,8 @@ import {
   HealthResponse,
   PruneRequest,
   PruneResponse,
+  WorkspacePruneRequest,
+  WorkspacePruneResponse,
 } from "../types";
 import { TokenWiseConfig } from "./config";
 
@@ -82,5 +84,28 @@ export class TokenWiseApiClient {
     }
 
     return (await response.json()) as CarbonEstimateResponse;
+  }
+
+  public async pruneWorkspace(
+    request: WorkspacePruneRequest,
+  ): Promise<WorkspacePruneResponse> {
+    const response = await fetchWithTimeout(
+      `${this.config.apiUrl}/prune-workspace`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request),
+      },
+      this.config.timeoutMs,
+    );
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Workspace prune failed (${response.status}): ${body}`);
+    }
+
+    return (await response.json()) as WorkspacePruneResponse;
   }
 }

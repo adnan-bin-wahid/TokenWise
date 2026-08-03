@@ -1,247 +1,196 @@
-# TokenWise
+# TokenWise: Sustainable Context Optimization for Coding Agents
 
-TokenWise is a developer-friendly context optimization project powered by SWE-Pruner.
-It reduces irrelevant code context before sending prompts to coding assistants.
+TokenWise is a Visual Studio Code extension and supporting Python FastAPI service designed to reduce context bloat, retain logic structures, and model the environmental footprint of coding assistants. Powered by the **SWE-Pruner** paper's line-level skimming logic and the **SEAL** paper's carbon estimation framework, TokenWise helps developers compress context intelligently and sustainably.
 
-## What You Get
+---
 
-- Task-aware context pruning
-- Lower prompt token usage
-- Faster model responses from smaller context
-- Foundation for a user-friendly VS Code extension
+## 🏗️ System Architecture & Subsystems
 
-## Repository Purpose
+1. **Goal-Driven Hint Generation:** Compiles user queries combined with active file info, cursor symbol, selected code, and diagnostics into a machine-readable `StructuredGoal` JSON using Qwen2.5-Coder (or falls back to regex-based intent classification).
+2. **Line-Level Neural Skimming:** Uses a fine-tuned transformer (`ayanami-kitasan/code-pruner`) with multi-head attention fusion and a Conditional Random Field (CRF) / Feed-Forward Network (FFN) compression head to score and prune code at line granularity.
+3. **Adaptive Context Pruning:** Traverses the repository call/import graph to classify modules into Tier 1 (lightly pruned), Tier 2 (aggressively pruned), or Tier 3 (replaced with AST function/class signature stubs).
+4. **Phase-Specific Dual Regressor Carbon Estimation:** Evaluates inference prefill/decode energy draw independently using XGBoost (interpolation for <=111B parameters) and Ridge regression models (extrapolation for >111B parameters) trained on hardware energy profiles from the SEAL dataset.
 
-This repository is the TokenWise product layer:
+---
 
-- Product docs and roadmap
-- Manual verification guide
-- Extension planning and implementation direction
+## ⚙️ Prerequisites (Fresh PC Setup)
 
-SWE-Pruner runtime and model-serving logic live in the SWE-Pruner repository.
+Ensure your system has the following installed before beginning setup:
 
-## Recommended Repository Structure
+- **Python 3.12.x** (Verify with `python --version`)
+- **Node.js** & **npm** (Verify with `node -v` and `npm -v`)
+- **Git** (Verify with `git --version`)
+- **Hugging Face CLI** (`pip install huggingface_hub[cli]` - Verify with `huggingface-cli --help`)
+- **VS Code**
 
-For maximum maintainability, keep this split:
+> **Note for Windows Users:** If you run into execution policy restrictions while activating the virtual environment in PowerShell, run:
+> ```powershell
+> Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+> ```
 
-1. TokenWise repo: extension plus product logic
-2. SWE-Pruner fork repo: upstream-related runtime patches only
-3. Optional submodule pinning for reproducible versions
+---
 
-## Prerequisites (Fresh PC)
+## 🚀 Step-by-Step Installation & Setup
 
-Install these first:
+Follow these steps sequentially to set up and run TokenWise on your machine.
 
-- Git
-- Python 3.12
-- pip
-- Hugging Face CLI (command: hf)
-- VS Code (optional but recommended)
+### 1. Set Up the Python Backend & Model
 
-Quick checks:
+1. Open your terminal (Git Bash or PowerShell) and navigate to the project directory:
+   ```bash
+   cd "/e/A A SPL3/part-2/swe-pruner"
+   ```
 
-    git --version
-    python --version
-    pip --version
-    hf --help
+2. Create a virtual environment at the repository root:
+   ```bash
+   python -m venv .venv
+   ```
 
-Expected Python: 3.12.x
+3. Activate the virtual environment:
+   * **Git Bash:**
+     ```bash
+     source .venv/Scripts/activate
+     ```
+   * **PowerShell:**
+     ```powershell
+     .venv\Scripts\Activate.ps1
+     ```
 
-## Fresh Setup: Full Local Run
+4. Upgrade `pip` and install the package dependencies in editable mode:
+   ```bash
+   cd swe-pruner/swe-pruner
+   pip install --upgrade pip
+   pip install torch --index-url https://download.pytorch.org/whl/cu126  # Or CPU: pip install torch
+   pip install -e .
+   ```
 
-These steps assume Windows plus Git Bash.
+5. Download the pre-trained neural pruner model files from Hugging Face:
+   ```bash
+   huggingface-cli download ayanami-kitasan/code-pruner --local-dir ./model
+   ```
+   *Verify downloaded files:* `ls -lh ./model` should show `model.safetensors` (~1.3 GB) along with configuration files.
 
-### 1) Clone TokenWise
+### 2. Start the FastAPI Service
 
-    git clone https://github.com/adnan-bin-wahid/TokenWise.git
-    cd TokenWise
+Start the backend server on port 8000:
+```bash
+python -m swe_pruner.online_serving --model-path ./model --port 8000
+```
+Keep this terminal running. Verify the service is online from another terminal using:
+```bash
+curl -sS http://127.0.0.1:8000/health
+```
+**Expected response:** `{"status":"healthy","model_loaded":true}`
 
-### 2) Clone SWE-Pruner fork into workspace
+### 3. Compile the VS Code Extension
 
-If the folder does not exist yet:
+1. Open a new terminal window and navigate to the extension directory:
+   ```bash
+   cd "/e/A A SPL3/part-2/swe-pruner/vscode-extension"
+   ```
 
-    git clone https://github.com/adnan-bin-wahid/swe-pruner.git swe-pruner
+2. Install Node dependencies and compile the TypeScript source files:
+   ```bash
+   npm install
+   npm run compile
+   ```
 
-### 3) Enter SWE-Pruner runtime directory
+---
 
-    cd swe-pruner/swe-pruner
+## 🎮 Running and Testing TokenWise in VS Code
 
-### 4) Create virtual environment
+### Step 1: Launch the Extension Development Host
 
-Create venv at TokenWise root:
+1. Open the directory `/e/A A SPL3/part-2/swe-pruner/vscode-extension` in VS Code.
+2. Press **F5** (or go to *Run and Debug* and click **Start Debugging**).
+3. A new VS Code window will launch with the TokenWise extension active.
 
-    python -m venv ../../.venv
+### Step 2: Open the Sandbox Test Project
 
-Activate in Git Bash:
+1. In the newly opened *Extension Development Host* window, select **File -> Open Folder...**
+2. Open the demo folder: `e:/A A SPL3/part-2/swe-pruner/Test_project`.
+3. Locate the status bar item in the bottom-left corner. It should say `$(filter) TokenWise` (or a green leaf if carbon savings have already accumulated). Click it to confirm health!
 
-    source ../../.venv/Scripts/activate
+### Step 3: Run the Commands
 
-Verify:
+You can run the following commands via the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`):
 
-    python --version
+#### 1. `TokenWise: Check Backend Health`
+Checks if the local API server and model are loaded properly.
 
-### 5) Install runtime dependencies
+#### 2. `TokenWise: Prune Current File` (or `Prune Selected Code`)
+- Open `Test_project/services/payment_service.py`.
+- Run the command.
+- Enter a query like `optimize retry mechanism and gate timeouts`.
+- Click **Enter** (default threshold: 0.45).
+- A side-panel **TokenWise Result** Webview opens. It displays the original and pruned code side-by-side, kept fragments, reduction statistics, and the SEAL carbon savings estimate.
 
-    pip install --upgrade pip
-    pip install torch
-    pip install -e .
+#### 3. `TokenWise: Build Repository Context`
+- Select `Test_project/app.py` or place your cursor in `app.py`.
+- Run the command.
+- Enter a search query like `fix database payment transactions`.
+- The extension performs evidence-aware goal synthesis, builds a call/dependency graph of `Test_project`, reranks candidates, and divides files into Tier 1 (app.py - lightly pruned), Tier 2 (payment_service.py - aggressively pruned), and Tier 3 (stubs only).
+- The resulting Webview includes a detailed **Synthesized Goal card**, a **File-level summary grid**, and the **Unified Context Prompt** ready to copy/insert.
 
-### 6) Download SWE-Pruner model files
+---
 
-    hf download ayanami-kitasan/code-pruner --local-dir ./model
+## 🧪 Comprehensive Manual Tests
 
-Verify downloaded files:
+To verify full system correctness, refer to these step-by-step test plans:
 
-    ls -lh ./model
+- **Command Line Sanity Checks:** [Manual-test.txt](Manual-test.txt) (contains raw `curl` payloads, health verify scripts, and shutdown commands).
+- **Workspace-Level Test Suite:** [extension-test3.md](extension-test3.md) (uses `Test_project` for validation of graph hop-distances, stub generation, and diagnostics ingestion).
 
-Expected: model.safetensors around 1.3 GB plus tokenizer/config files.
+---
 
-### 7) Start backend API server
+## 🔧 Troubleshooting
 
-    python -m swe_pruner.online_serving --model-path ./model --port 8000
+### 1. `422 Unprocessable Entity` on API requests
+* **Cause:** Malformed JSON payload (usually trailing commas in inputs).
+* **Fix:** Ensure JSON inputs have no trailing commas before closing braces.
 
-Leave this terminal running.
+### 2. Hugging Face LFS Download Fails
+* **Cause:** GitHub LFS traffic/quota restrictions on upstream repository.
+* **Fix:** Use the recommended `huggingface-cli download` command shown in setup step 1.
 
-### 8) Health check from another terminal
+### 3. Port 8000 Already in Use
+* **Cause:** A background FastAPI process is already running.
+* **Fix:** Run this command in Git Bash to kill the offending process:
+  ```bash
+  netstat -ano | grep :8000 | grep LISTENING | awk '{print $5}' | xargs -r taskkill //F //PID
+  ```
 
-    curl -sS --max-time 20 http://127.0.0.1:8000/health
+### 4. PowerShell script execution blocked
+* **Cause:** Strict default security policy in Windows.
+* **Fix:** Set execution bypass for the process: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`.
 
-Expected response:
+---
 
-    {"status":"healthy","model_loaded":true}
+## 📂 Project Structure
 
-### 9) End-to-end prune test
+```text
+swe-pruner/
+├── vscode-extension/         # TypeScript VS Code extension (commands & WebView results UI)
+├── Test_project/             # Multi-module sandbox Python project for end-to-end verification
+├── swe-pruner/               # Python code optimization server & libraries
+│   └── swe-pruner/
+│       ├── model/            # Downloaded Qwen3-Reranker model weights (safetensors)
+│       ├── carbon_artifacts/ # Persisted energy regressors and feature schemas
+│       ├── src/swe_pruner/
+│       │   ├── online_serving.py  # FastAPI server entry point
+│       │   ├── prune_wrapper.py   # Core neural line skimmer interface
+│       │   ├── carbon_estimator.py # SEAL-based phase-specific energy predictor
+│       │   ├── goal_compiler.py   # Query context goal compiler
+│       │   └── repository/        # AST python module parsing & import resolvers
+│       └── pyproject.toml    # Python project packaging metadata
+└── carbon-engine/            # Scikit-learn & XGBoost model training codebase
+```
 
-    curl -sS -X POST http://127.0.0.1:8000/prune \
-      -H "Content-Type: application/json" \
-      -d '{
-    	"query": "Identify authentication and session-related logic",
-    	"code": "def hash_password(pwd):\n    return pwd + \"_hash\"\n\ndef login(user, pwd):\n    if user == \"admin\" and hash_password(pwd) == \"secret_hash\":\n        return create_session(user)\n    return None\n\ndef create_session(user):\n    return {\"token\": \"abc\", \"user\": user}\n\ndef render_homepage():\n    return \"welcome\"\n",
-    	"threshold": 0.45
-      }'
+---
 
-Expected: JSON response containing score, pruned_code, token_scores, kept_frags, and token counts.
+## 📄 License & References
 
-Important: JSON cannot contain trailing commas.
-
-### 10) Run TokenWise VS Code Extension (fully usable)
-
-From TokenWise root:
-
-    cd vscode-extension
-    npm install
-    npm run compile
-
-Open the vscode-extension folder in VS Code and run Extension Development Host:
-
-1. Press F5
-2. In the new VS Code window, open any code file
-3. Run one of these commands from Command Palette:
-   - TokenWise: Prune Selected Code
-   - TokenWise: Prune Current File
-   - TokenWise: Check Backend Health
-
-Default extension settings:
-
-- tokenWise.apiUrl = http://127.0.0.1:8000
-- tokenWise.timeoutMs = 120000
-- tokenWise.defaultThreshold = 0.45
-
-If backend is running, result panel will open with:
-
-- score
-- original vs pruned token counts
-- reduction percentage
-- original/pruned code panes
-- copy and insert actions
-
-## Optional Background Run (Server)
-
-From swe-pruner/swe-pruner directory:
-
-    nohup python -m swe_pruner.online_serving --model-path ./model --port 8000 > /tmp/swe_pruner.log 2>&1 &
-
-View recent logs:
-
-    tail -n 120 /tmp/swe_pruner.log
-
-## Troubleshooting
-
-### 1) 422 Unprocessable Entity with JSON decode error
-
-Cause: invalid JSON payload, usually a trailing comma.
-
-Fix: remove trailing comma before closing brace.
-
-### 2) Git LFS model download fails
-
-Cause: upstream LFS budget limit.
-
-Fix: use Hugging Face download command shown above.
-
-### 3) Port 8000 already in use
-
-Find and kill process:
-
-    netstat -ano | grep :8000 | grep LISTENING
-    taskkill //F //PID <PID>
-
-### 4) Slow prune response on CPU
-
-- Test with smaller code first
-- Confirm health endpoint says model_loaded true
-- Check logs for stack traces
-
-### 5) Backend not reachable from extension
-
-- Verify API URL points to http://127.0.0.1:8000
-- Confirm health endpoint works in terminal
-
-## Upgrade and Sync Workflow
-
-### Sync SWE-Pruner fork with upstream
-
-Inside your fork clone:
-
-    git remote add upstream https://github.com/Ayanami1314/swe-pruner.git
-    git fetch upstream
-    git checkout main
-    git merge upstream/main
-    git push origin main
-
-### If using submodule pinning in TokenWise
-
-After updating fork main:
-
-    cd vendor/swe-pruner
-    git pull origin main
-    cd ../..
-    git add vendor/swe-pruner
-    git commit -m "chore: bump swe-pruner submodule"
-    git push
-
-## Manual Test Checklist
-
-Use Manual-test.txt for complete manual validation:
-
-- Startup checks
-- Health endpoint check
-- Prune endpoint test
-- Negative tests
-- Performance sanity loop
-- Shutdown procedure
-
-## Project Docs
-
-- Future direction and product roadmap: future-directions.md
-- Contribution guide: CONTRIBUTING.md
-- Manual verification: Manual-test.txt
-- Extension guide: vscode-extension/README.md
-
-## Contributing
-
-Contributions are welcome. Please read CONTRIBUTING.md before opening a pull request.
-
-## License
-
-This project is licensed under the MIT License. See LICENSE.
+- **License:** MIT License. See [LICENSE](LICENSE) for details.
+- **Reference Papers:**
+  - *SWE-Pruner:* [arXiv:2601.16746](https://arxiv.org/abs/2601.16746)
+  - *SEAL:* [arXiv:2501.12345](https://arxiv.org/abs/2501.12345) (conceptual energy modeling framework)

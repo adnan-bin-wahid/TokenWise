@@ -78,3 +78,33 @@ export interface PruneResultViewModel {
   carbonAfter?: CarbonEstimateViewModel;
   carbonSavings?: CarbonSavingsViewModel;
 }
+
+export interface WorkspacePruneRequest {
+  query: string;
+  workspace_root: string;
+  active_file: string;
+  language: string;
+  current_symbol?: string;
+  selected_code?: string;
+  diagnostics: string[];
+  threshold: number;
+  local_llm_url?: string;
+  local_llm_model?: string;
+}
+
+export interface WorkspaceFilePruneResult {
+  file_path: string;
+  relation: string;
+  tier: number;
+  original_tokens: number;
+  pruned_tokens: number;
+  score: number;
+}
+
+export interface WorkspacePruneResponse {
+  structured_goal: any;
+  unified_prompt: string;
+  pruned_tokens: number;
+  original_tokens: number;
+  files: WorkspaceFilePruneResult[];
+}
